@@ -31,24 +31,33 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="116dp"
-        android:layout_height="19dp"
-        android:layout_marginTop="80dp"
-        android:text="@string/textview"
+    <EditText
+        android:id="@+id/dataEt"
+        android:layout_width="301dp"
+        android:layout_height="324dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="136dp"
+        android:inputType="text"
+        app:layout_constraintBottom_toTopOf="@+id/sqlBt"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.44"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintVertical_bias="0.0"
+        android:autofillHints="@string/SQL_Data"
+        android:hint="@string/SQL_Data"/>
+
+
+    <Button
+        android:id="@+id/sqlBt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="440dp"
+        android:onClick="getSqlQuery"
+        android:text="@string/Get_Data"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="80dp"
-        android:text="@string/button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
 </androidx.constraintlayout.widget.ConstraintLayout>

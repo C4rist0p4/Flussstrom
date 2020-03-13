@@ -43,6 +43,7 @@
         android:layout_marginTop="16dp"
         android:onClick="signInWithEmailAndPassword"
         android:text="@string/login"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/passwordET" />
