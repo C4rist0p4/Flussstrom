@@ -9,11 +9,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar"/>
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <activity android:name=".MachineryActivity" />
+        <activity android:name=".MainActivity" />
         <activity android:name=".SqlInterface" />
         <activity android:name=".CreateUser" />
         <activity android:name=".LoginActivity">

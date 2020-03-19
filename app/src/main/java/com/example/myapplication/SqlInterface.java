@@ -40,47 +40,40 @@ public class SqlInterface extends AppCompatActivity {
         return mFunctions
                 .getHttpsCallable("getMeldung")
                 .call()
-                .continueWith(new Continuation<HttpsCallableResult, String>() {
-
-                    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-                    public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-                        HashMap<String, String> result;
-                        try {
-                            result = (HashMap<String, String>) Objects.requireNonNull(task.getResult()).getData();
-                            assert result != null;
-                            return result.toString();
-                        } catch (Exception e) {
-                            throw new Exception(e);
-                        }
+                .continueWith(task -> {
+                    HashMap<String, String> result;
+                    try {
+                        result = (HashMap<String, String>) Objects.requireNonNull(task.getResult()).getData();
+                        assert result != null;
+                        return result.toString();
+                    } catch (Exception e) {
+                        throw new Exception(e);
                     }
                 });
     }
 
     public void getSqlQuery(View view) {
         addMessage()
-                .addOnCompleteListener(new OnCompleteListener<String>() {
-                    @Override
-                    public void onComplete(@NonNull Task<String> task) {
-                        if (!task.isSuccessful()) {
-                            Exception e = task.getException();
-                            if (e instanceof FirebaseFunctionsException) {
-                                FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
-                                FirebaseFunctionsException.Code code = ffe.getCode();
-                                Object details = ffe.getDetails();
-                            }
-                                // [START_EXCLUDE]
-                                Log.w("addMessage:onFailure", e);
-                                showSnackbar("An error occurred.");
-                                return;
-                                // [END_EXCLUDE]
-                            }
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Exception e = task.getException();
+                        if (e instanceof FirebaseFunctionsException) {
+                            FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
+                            FirebaseFunctionsException.Code code = ffe.getCode();
+                            Object details = ffe.getDetails();
+                        }
                             // [START_EXCLUDE]
-                            String result = task.getResult();
-
-                            dataTv.setText(result);
+                            Log.w("addMessage:onFailure", e);
+                            showSnackbar("An error occurred.");
+                            return;
                             // [END_EXCLUDE]
                         }
-                });
+                        // [START_EXCLUDE]
+                        String result = task.getResult();
+
+                        dataTv.setText(result);
+                        // [END_EXCLUDE]
+                    });
     }
 
     private void showSnackbar(String message) {

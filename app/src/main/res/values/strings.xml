@@ -1,14 +1,6 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">Flussstrom</string>
     <string name="title_activity_create_user">CreateUser</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
-
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="e_mail">E-Mail</string>
     <string name="password">Password</string>
     <string name="sing_up">Sing Up</string>
@@ -21,4 +13,47 @@
     <string name="SQL_Data">SQL Data</string>
     <string name="Flussstrom">Flussstrom</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="Eingespeiste_Leistung">Eingespeiste Leistung</string>
+    <string name="Leistung_24h">Leistung 24h</string>
+    <string name="Leistung_Durchschnitt">Leistung Durchschnitt</string>
+    <string name="Prozent_vom_Durchschnitt">Prozent vom Durchschnitt</string>
+    <string name="MD_Flottille_1">MD Flottille 1</string>
+    <string name="Generatoreinheit_1">Generatoreinheit 1</string>
+    <string name="Generatoreinheit_2">Generatoreinheit 2</string>
+    <string name="Erzeugte_Leistung">Erzeugte Leistung</string>
+    <string name="title_activity_machinery">MachineryActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="LogOut">Log Out</string>
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="title_activity_login2">Sign in</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="anlagenstammdaten">Anlagenstammdaten</string>
+    <string name="systematische_ansicht">Systematische Ansicht</string>
+    <string name="komponentenbasierte_ansicht">Komponentenbasierte Ansicht</string>
+    <string name="meldung">Meldung</string>
+    <string name="bilder">Bilder</string>
+    <string name="steuerung">Steuerung</string>
+    <string name="anlagenname">Anlagenname</string>
+    <string name="installationsort">Installationsort</string>
+    <string name="inbetriebnahme">Inbetriebnahme</string>
+    <string name="seriennummer">Seriennummer</string>
+    <string name="leistung">Leistung</string>
+    <string name="anschlusswerte">Anschlusswerte</string>
+    <string name="datenanschluss">Datenanschluss</string>
+    <string name="tiefgang">Tiefgang</string>
+    <string name="datenblatt">Datenblatt</string>
+    <string name="bemerkung">Bemerkung</string>
+
 </resources>
