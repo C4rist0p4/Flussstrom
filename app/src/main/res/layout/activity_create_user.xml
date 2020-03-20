@@ -6,22 +6,22 @@
     android:layout_height="match_parent"
     tools:context=".CreateUser">
 
-    <include layout="@layout/toolbar" />
+    <include
+        android:id="@+id/include3"
+        layout="@layout/toolbar" />
 
     <EditText
         android:id="@+id/emailET"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:autofillHints=""
         android:ems="10"
         android:hint="@string/e_mail"
         android:inputType="textEmailAddress"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.204" />
+        app:layout_constraintTop_toBottomOf="@+id/include3" />
 
     <EditText
         android:id="@+id/Passwor1ET"
@@ -41,6 +41,7 @@
         android:id="@+id/Password2ET"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:autofillHints=""
         android:ems="10"
         android:hint="@string/password"
@@ -53,10 +54,11 @@
         android:id="@+id/singUpBT"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:onClick="createUser"
         android:text="@string/sing_up"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Password2ET" />
 

@@ -55,5 +55,12 @@
     <string name="tiefgang">Tiefgang</string>
     <string name="datenblatt">Datenblatt</string>
     <string name="bemerkung">Bemerkung</string>
+    <string name="drehzahl">Drehzahl</string>
+    <string name="frequenz">Frequenz</string>
+    <string name="spannung">Spannung</string>
+    <string name="stroeme">Ströme</string>
+    <string name="temperatur">Temperatur</string>
+    <string name="rueckspeiseeinheit">Rückspeiseeinheit</string>
+    <string name="alarm">Alarm</string>
 
 </resources>
