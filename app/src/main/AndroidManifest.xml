@@ -12,7 +12,6 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity android:name=".MachineryActivity" />
         <activity android:name=".MainActivity" />
-        <activity android:name=".SqlInterface" />
         <activity android:name=".CreateUser" />
         <activity android:name=".LoginActivity">
             <intent-filter>

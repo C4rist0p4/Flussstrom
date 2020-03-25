@@ -1,65 +1,171 @@
 package com.example.myapplication;
 
+import android.annotation.SuppressLint;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import static android.content.Context.MODE_PRIVATE;
 
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link Report#newInstance} factory method to
- * create an instance of this fragment.
- */
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.functions.FirebaseFunctions;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Objects;
+
 public class Report extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public Report() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Report.
-     */
-    // TODO: Rename and change types and number of parameters
-
-    private static Report newInstance(String param1, String param2) {
-        Report fragment = new Report();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private FirebaseFunctions mFunctions;
+    private RecyclerView recyclerView;
+    private ReportAdapter reportAdapter;
+    private ArrayList<ReportItme> arrayList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        mFunctions = FirebaseFunctions.getInstance();
+        arrayList =  new ArrayList<>();
+
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_report, container, false);
+        View view = inflater.inflate(R.layout.fragment_report, container, false);
+        recyclerView = view.findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+
+        SQLiteDatabase sqLiteDatabase = getDatabase();
+        Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM Meldungen", null);
+
+        if(cursor != null && cursor.getCount()>0){
+            databaseToUI(cursor);
+        }
+        else {
+            getData();
+        }
+        return view;
+    }
+
+    @SuppressLint("SQLiteString")
+    private SQLiteDatabase getDatabase() {
+        SQLiteDatabase sqLiteDatabase = getActivity().openOrCreateDatabase("Flussstrom", MODE_PRIVATE, null);
+        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS Meldungen (datum TEXT, fk_meldungstyp TEXT, bemerkungMel TEXT)");
+
+        return sqLiteDatabase;
+    }
+
+    private void databaseToUI(Cursor cursor) {
+        try {
+            int datumIndex = cursor.getColumnIndex("datum");
+            int fk_meldungstypIndex = cursor.getColumnIndex("fk_meldungstyp");
+            int bemerkungMelIndex = cursor.getColumnIndex("bemerkungMel");
+
+            if (cursor.moveToFirst()) {
+                do {
+                    String datum = cursor.getString(datumIndex);
+                    String bemerkungMel = cursor.getString(fk_meldungstypIndex);
+                    String fk_meldungstyp = cursor.getString(bemerkungMelIndex);
+
+                    arrayList.add(new ReportItme(datum,  fk_meldungstyp, bemerkungMel));
+                }
+                while ( cursor.moveToNext());
+            }
+            reportAdapter = new ReportAdapter(getActivity(), arrayList);
+            recyclerView.setAdapter(reportAdapter);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void safeData(ArrayList data) {
+        SQLiteDatabase sqLiteDatabase = getDatabase();
+        ContentValues cv = new  ContentValues();
+
+        for(int i=0; i < data.size(); i++){
+            HashMap<String, String> meldungen = (HashMap<String, String>) data.get(i);
+
+            String datum_ = meldungen.get("datum");
+            String bemerkungMel_ = meldungen.get("bemerkungMel");
+            String fk_meldungstyp_ = String.valueOf(meldungen.get("fk_meldungstyp"));
+
+            cv.put("datum",    datum_);
+            cv.put("bemerkungMel",   bemerkungMel_);
+            cv.put("fk_meldungstyp",   fk_meldungstyp_);
+
+            sqLiteDatabase.insert( "Meldungen", null, cv );
+        }
+    }
+
+
+    private void getData() {
+        addMessage()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Exception e = task.getException();
+/*                        if (e instanceof FirebaseFunctionsException) {
+                            FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
+                            FirebaseFunctionsException.Code code = ffe.getCode();
+                            Object details = ffe.getDetails();
+                        }*/
+                        Log.w("TAG", "addMessage:onFailure", e);
+                        showSnackBar("An error occurred.");
+                        return;
+                    }
+                    ArrayList result = task.getResult();
+                    assert result != null;
+                    showData(result);
+                    safeData(result);
+                });
+    }
+
+    private Task<ArrayList> addMessage() {
+        return mFunctions
+                .getHttpsCallable("getMeldung")
+                .call()
+                .continueWith(task -> {
+                    ArrayList<String> result;
+                    try {
+                        result = (ArrayList<String>) Objects.requireNonNull(task.getResult()).getData();
+                        assert result != null;
+                        return result;
+                    } catch (Exception e) {
+                        throw new Exception(e);
+                    }
+                });
+    }
+
+    private void showData(ArrayList data){
+        try {
+            for (int i = 0; i < data.size(); i++){
+                HashMap<String, String> meldungen = (HashMap<String, String>) data.get(i);
+
+                String datum = meldungen.get("datum");
+                String bemerkungMel = meldungen.get("bemerkungMel");
+                String fk_meldungstyp = String.valueOf(meldungen.get("fk_meldungstyp"));
+
+                arrayList.add(new ReportItme(datum,  fk_meldungstyp, bemerkungMel));
+            }
+            reportAdapter = new ReportAdapter(getActivity(), arrayList);
+            recyclerView.setAdapter(reportAdapter);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showSnackBar(String message) {
+        Snackbar.make(Objects.requireNonNull(getView()).findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
     }
 }
