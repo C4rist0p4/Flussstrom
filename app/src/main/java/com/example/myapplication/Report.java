@@ -109,7 +109,7 @@ public class Report extends Fragment {
         }
     }
 
-
+    // TODO Datum Abfrage hinzufügen
     private void getData() {
         addMessage()
                 .addOnCompleteListener(task -> {
