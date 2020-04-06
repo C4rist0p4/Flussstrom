@@ -1,30 +1,23 @@
 package com.example.myapplication;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.JsonReader;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.functions.FirebaseFunctions;
-import com.google.firebase.functions.HttpsCallableResult;
-
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
 
 public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
@@ -38,6 +31,7 @@ public class LoginActivity extends AppCompatActivity {
     private String email;
     private String name;
     private String password;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,9 +58,14 @@ public class LoginActivity extends AppCompatActivity {
          email = emailET.getText().toString();
          password = passwordET.getText().toString();
          name = nameET.getText().toString();
-         //TODO Passwort auf 6 zeichen prüfen
 
-         callHttpCloudFunction();
+        if (password.length() <= 5) {
+            Toast.makeText(LoginActivity.this,
+                    "Ihr Passwort muss mindestens 6 Zeichen lang sein.",
+                    Toast.LENGTH_LONG).show();
+        } else {
+            callHttpCloudFunction();
+        }
     }
 
     public void createUser(View view) {
@@ -113,7 +112,6 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d("success", "signInWithEmail:success");
                     updateUI();
                 } else {
-                    // If sign in fails, display a message to the user.
                     Log.w("Create new User", "createUserWithEmail", task.getException());
                     createUser();
                 }
@@ -128,14 +126,60 @@ public class LoginActivity extends AppCompatActivity {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        Log.d("success", "createUserWithEmail:success");
-                        // TODO
+                        Log.i("success", "createUserWithEmail:success");
+                        getInstanceId();
                         updateUI();
                     } else {
                         Log.w("failure", "createUserWithEmail:failure", task.getException());
-                        Toast.makeText(LoginActivity.this, "Authentication failed.",
+                        Toast.makeText(LoginActivity.this, "Create User failed.",
                                 Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void getInstanceId() {
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(task1 -> {
+                    if (!task1.isSuccessful()) {
+                        Log.w("TAG", "getInstanceId failed", task1.getException());
+                        return;
+                    }
+                    // Get new Instance ID token
+                    String token = task1.getResult().getToken();
+                    callHttpSetIdDevice(token);
+                });
+    }
+
+    private void callHttpSetIdDevice(String Token) {
+
+        callSetIdDevice(Token)
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Exception e = task.getException();
+                        Log.w("callHttpSetIdDvice", "addMessage:onFailure", e);
+                        return;
+                    }
+                    String result = task.getResult();
+
+                    assert result != null;
+                    if (Boolean.parseBoolean(result)) {
+                        Log.i("Token", "set true");
+                    } else {
+                        Log.i("Token", "set false");
+                    }
+                });
+    }
+
+    private Task<String> callSetIdDevice(String Token) {
+        mFunctions = FirebaseFunctions.getInstance();
+        Map<String, Object> data = new HashMap<>();
+
+        data.put("name", name);
+        data.put("idDevice", Token);
+
+        return mFunctions
+                .getHttpsCallable("setIdDevice")
+                .call(data)
+                .continueWith(task -> (String) Objects.requireNonNull(task.getResult()).getData());
     }
 }

@@ -34,7 +34,6 @@ public class Report extends Fragment {
         super.onCreate(savedInstanceState);
         mFunctions = FirebaseFunctions.getInstance();
         arrayList =  new ArrayList<>();
-
     }
 
     @Override
