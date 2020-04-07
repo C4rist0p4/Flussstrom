@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
 import static android.content.Context.MODE_PRIVATE;
 
 import androidx.fragment.app.Fragment;
@@ -16,7 +18,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.functions.FirebaseFunctions;
 
 import java.util.ArrayList;
@@ -60,7 +61,7 @@ public class Report extends Fragment {
 
     @SuppressLint("SQLiteString")
     private SQLiteDatabase getDatabase() {
-        SQLiteDatabase sqLiteDatabase = getActivity().openOrCreateDatabase("Flussstrom", MODE_PRIVATE, null);
+        SQLiteDatabase sqLiteDatabase = Objects.requireNonNull(getActivity()).openOrCreateDatabase("Flussstrom", MODE_PRIVATE, null);
         sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS Meldungen (datum TEXT, fk_meldungstyp TEXT, bemerkungMel TEXT)");
 
         return sqLiteDatabase;
@@ -114,13 +115,9 @@ public class Report extends Fragment {
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful()) {
                         Exception e = task.getException();
-/*                        if (e instanceof FirebaseFunctionsException) {
-                            FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
-                            FirebaseFunctionsException.Code code = ffe.getCode();
-                            Object details = ffe.getDetails();
-                        }*/
                         Log.w("TAG", "addMessage:onFailure", e);
-                        showSnackBar("An error occurred.");
+                        Toast.makeText(Objects.requireNonNull(getActivity()).getApplicationContext(), "An error occurred."
+                                , Toast.LENGTH_SHORT).show();
                         return;
                     }
                     ArrayList result = task.getResult();
@@ -149,13 +146,13 @@ public class Report extends Fragment {
     private void showData(ArrayList data){
         try {
             for (int i = 0; i < data.size(); i++){
-                HashMap<String, String> meldungen = (HashMap<String, String>) data.get(i);
+                    HashMap<String, String> meldungen = (HashMap<String, String>) data.get(i);
 
-                String datum = meldungen.get("datum");
-                String bemerkungMel = meldungen.get("bemerkungMel");
-                String fk_meldungstyp = String.valueOf(meldungen.get("fk_meldungstyp"));
+                    String datum = meldungen.get("datum");
+                    String bemerkungMel = meldungen.get("bemerkungMel");
+                    String fk_meldungstyp = String.valueOf(meldungen.get("fk_meldungstyp"));
 
-                arrayList.add(new ReportItme(datum,  fk_meldungstyp, bemerkungMel));
+                    arrayList.add(new ReportItme(datum,  fk_meldungstyp, bemerkungMel));
             }
             reportAdapter = new ReportAdapter(getActivity(), arrayList);
             recyclerView.setAdapter(reportAdapter);
@@ -164,7 +161,4 @@ public class Report extends Fragment {
         }
     }
 
-    private void showSnackBar(String message) {
-        Snackbar.make(Objects.requireNonNull(getView()).findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
-    }
 }

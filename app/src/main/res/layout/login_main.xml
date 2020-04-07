@@ -23,7 +23,7 @@
             android:clickable="true"
             android:focusable="true"
             android:lineSpacingExtra="8sp"
-            android:onClick="createUser"
+            android:onClick="openCreateUser"
             android:text="@string/register"
             android:textAllCaps="true"
             android:textColor="#3D8BCD"
