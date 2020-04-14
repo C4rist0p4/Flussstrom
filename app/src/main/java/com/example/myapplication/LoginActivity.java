@@ -2,7 +2,9 @@ package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -134,27 +136,38 @@ public class LoginActivity extends AppCompatActivity {
                         Log.w("HttpFailure", "Failure on "+ funcName , e);
                         return;
                     }
-                    String result = task.getResult();
+                    HashMap result = task.getResult();
                     assert result != null;
 
-                    if (result.equals("user true")) {
+                    if (Objects.equals(result.get("message"), "true")) {
                         signIn();
-                    } else if(result.equals("Id Device set")) {
+                    } else if(Objects.equals(result.get("message"), "Id Device set")) {
                         Log.i("Device", "Id set");
+                        setUserID(Objects.requireNonNull(result.get("idBenutzer")).toString());
                         updateUI();
                     } else {
                         Toast.makeText(LoginActivity.this, "Authentication failed " + result,
                                 Toast.LENGTH_SHORT).show();
                     }
+
                 });
     }
 
-    private Task<String> callCloudFunction(String funcName, HashMap data) {
+    private Task<HashMap> callCloudFunction(String funcName, HashMap data) {
         mFunctions = FirebaseFunctions.getInstance();
         return mFunctions
                 .getHttpsCallable(funcName)
                 .call(data)
-                .continueWith(task -> (String) Objects.requireNonNull(task.getResult()).getData());
+                .continueWith(task -> (HashMap) Objects.requireNonNull(task.getResult()).getData());
     }
 
+    private void setUserID(String idUser) {
+        SQLiteDatabase sqLiteDatabase = Objects.requireNonNull(this).openOrCreateDatabase("Flussstrom", MODE_PRIVATE, null);
+        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS Benutzer (idBenutzer TEXT)");
+
+        ContentValues cv = new ContentValues();
+        cv.put("idBenutzer", idUser);
+
+        sqLiteDatabase.insert( "Benutzer", null, cv );
+    }
 }

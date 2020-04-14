@@ -92,7 +92,7 @@ public class Report extends Fragment {
 
     private void safeData(ArrayList data) {
         SQLiteDatabase sqLiteDatabase = getDatabase();
-        ContentValues cv = new  ContentValues();
+        ContentValues cv = new ContentValues();
 
         for(int i=0; i < data.size(); i++){
             HashMap<String, String> meldungen = (HashMap<String, String>) data.get(i);
@@ -109,7 +109,6 @@ public class Report extends Fragment {
         }
     }
 
-    // TODO Datum Abfrage hinzufügen
     private void getData() {
         addMessage()
                 .addOnCompleteListener(task -> {
@@ -126,11 +125,16 @@ public class Report extends Fragment {
                     safeData(result);
                 });
     }
-
+    // TODO fk_anlagen key abfragen
     private Task<ArrayList> addMessage() {
+
+        //get fk_anlagen
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("fk_anlagen", "1");
+
         return mFunctions
                 .getHttpsCallable("getMeldung")
-                .call()
+                .call(data)
                 .continueWith(task -> {
                     ArrayList<String> result;
                     try {
