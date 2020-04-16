@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.io.IOException;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
             FirebaseUser user = mAuth.getCurrentUser();
             updateUI(user);
         });
+
     }
 
     @Override
@@ -50,13 +52,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.LogOut:
-                    logout();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.LogOut) {
+            logout();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     private void updateUI(FirebaseUser currentUser) {

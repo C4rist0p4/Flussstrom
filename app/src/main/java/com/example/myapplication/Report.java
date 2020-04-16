@@ -1,17 +1,11 @@
 package com.example.myapplication;
 
-import android.annotation.SuppressLint;
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
-import static android.content.Context.MODE_PRIVATE;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -22,6 +16,8 @@ import com.google.firebase.functions.FirebaseFunctions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Objects;
 
 public class Report extends Fragment {
@@ -47,11 +43,11 @@ public class Report extends Fragment {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-        SQLiteDatabase sqLiteDatabase = getDatabase();
-        Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM Meldungen", null);
+        DatabaseHelper db = new DatabaseHelper(getActivity());
+        List<Messages> listMessages = db.getAllMessages();
 
-        if(cursor != null && cursor.getCount()>0){
-            databaseToUI(cursor);
+        if(listMessages != null && listMessages.size() > 0){
+            databaseToUI(listMessages);
         }
         else {
             getData();
@@ -59,30 +55,17 @@ public class Report extends Fragment {
         return view;
     }
 
-    @SuppressLint("SQLiteString")
-    private SQLiteDatabase getDatabase() {
-        SQLiteDatabase sqLiteDatabase = Objects.requireNonNull(getActivity()).openOrCreateDatabase("Flussstrom", MODE_PRIVATE, null);
-        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS Meldungen (datum TEXT, fk_meldungstyp TEXT, bemerkungMel TEXT)");
-
-        return sqLiteDatabase;
-    }
-
-    private void databaseToUI(Cursor cursor) {
+    private void databaseToUI(List<Messages> listMessages) {
         try {
-            int datumIndex = cursor.getColumnIndex("datum");
-            int fk_meldungstypIndex = cursor.getColumnIndex("fk_meldungstyp");
-            int bemerkungMelIndex = cursor.getColumnIndex("bemerkungMel");
 
-            if (cursor.moveToFirst()) {
-                do {
-                    String datum = cursor.getString(datumIndex);
-                    String bemerkungMel = cursor.getString(fk_meldungstypIndex);
-                    String fk_meldungstyp = cursor.getString(bemerkungMelIndex);
+            for (Messages messages : listMessages) {
+                String datum = messages.getMessagesDate();
+                String bemerkungMel = messages.getMessagesTitle();
+                String fk_meldungstyp = messages.getMessagesContent();
 
-                    arrayList.add(new ReportItme(datum,  fk_meldungstyp, bemerkungMel));
-                }
-                while ( cursor.moveToNext());
+                arrayList.add(new ReportItme(datum, fk_meldungstyp, bemerkungMel));
             }
+
             reportAdapter = new ReportAdapter(getActivity(), arrayList);
             recyclerView.setAdapter(reportAdapter);
         } catch (Exception e) {
@@ -90,22 +73,17 @@ public class Report extends Fragment {
         }
     }
 
-    private void safeData(ArrayList data) {
-        SQLiteDatabase sqLiteDatabase = getDatabase();
-        ContentValues cv = new ContentValues();
+    private void safeData(HashMap data) {
+        DatabaseHelper db = new DatabaseHelper(getActivity());
 
-        for(int i=0; i < data.size(); i++){
-            HashMap<String, String> meldungen = (HashMap<String, String>) data.get(i);
+        ArrayList<HashMap> arrlist = (ArrayList<HashMap>) data.get("allmeldungen");
 
-            String datum_ = meldungen.get("datum");
-            String bemerkungMel_ = meldungen.get("bemerkungMel");
-            String fk_meldungstyp_ = String.valueOf(meldungen.get("fk_meldungstyp"));
-
-            cv.put("datum",    datum_);
-            cv.put("bemerkungMel",   bemerkungMel_);
-            cv.put("fk_meldungstyp",   fk_meldungstyp_);
-
-            sqLiteDatabase.insert( "Meldungen", null, cv );
+        assert arrlist != null;
+        for (HashMap<String, String> element : arrlist) {
+            db.addMessages(element.get("datum"),
+                    element.get("bemerkungMel"),
+                    String.valueOf(element.get("fk_meldungstyp"))
+            );
         }
     }
 
@@ -119,50 +97,47 @@ public class Report extends Fragment {
                                 , Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    ArrayList result = task.getResult();
+                    HashMap result = task.getResult();
                     assert result != null;
                     showData(result);
                     safeData(result);
                 });
     }
-    // TODO fk_anlagen key abfragen
-    private Task<ArrayList> addMessage() {
 
-        //get fk_anlagen
+    private Task<HashMap> addMessage() {
+
+        DatabaseHelper db = new DatabaseHelper(getActivity());
+        List user = db.getUser();
+
         HashMap<String, Object> data = new HashMap<>();
-        data.put("fk_anlagen", "1");
+        data.put("fk_anlagen", user.get(1));
 
         return mFunctions
                 .getHttpsCallable("getMeldung")
                 .call(data)
-                .continueWith(task -> {
-                    ArrayList<String> result;
-                    try {
-                        result = (ArrayList<String>) Objects.requireNonNull(task.getResult()).getData();
-                        assert result != null;
-                        return result;
-                    } catch (Exception e) {
-                        throw new Exception(e);
-                    }
-                });
+                .continueWith(task -> (HashMap) Objects.requireNonNull(task.getResult()).getData());
     }
 
-    private void showData(ArrayList data){
+    private void showData(HashMap<String, List> data){
         try {
-            for (int i = 0; i < data.size(); i++){
-                    HashMap<String, String> meldungen = (HashMap<String, String>) data.get(i);
+            List<HashMap> listdata = data.get("allmeldungen");
 
-                    String datum = meldungen.get("datum");
-                    String bemerkungMel = meldungen.get("bemerkungMel");
-                    String fk_meldungstyp = String.valueOf(meldungen.get("fk_meldungstyp"));
+            assert listdata != null;
+            for (int i = 0; i < listdata.size(); i++){
+                HashMap<String, String> meldungen = listdata.get(i);
 
-                    arrayList.add(new ReportItme(datum,  fk_meldungstyp, bemerkungMel));
+                String datum = meldungen.get("datum");
+                String bemerkungMel = meldungen.get("bemerkungMel");
+                String fk_meldungstyp = String.valueOf(meldungen.get("fk_meldungstyp"));
+
+                arrayList.add(new ReportItme(datum, fk_meldungstyp, bemerkungMel));
             }
+
             reportAdapter = new ReportAdapter(getActivity(), arrayList);
             recyclerView.setAdapter(reportAdapter);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 }

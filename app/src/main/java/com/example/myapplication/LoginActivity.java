@@ -143,7 +143,7 @@ public class LoginActivity extends AppCompatActivity {
                         signIn();
                     } else if(Objects.equals(result.get("message"), "Id Device set")) {
                         Log.i("Device", "Id set");
-                        setUserID(Objects.requireNonNull(result.get("idBenutzer")).toString());
+                        setUserID(Objects.requireNonNull(result));
                         updateUI();
                     } else {
                         Toast.makeText(LoginActivity.this, "Authentication failed " + result,
@@ -161,13 +161,9 @@ public class LoginActivity extends AppCompatActivity {
                 .continueWith(task -> (HashMap) Objects.requireNonNull(task.getResult()).getData());
     }
 
-    private void setUserID(String idUser) {
-        SQLiteDatabase sqLiteDatabase = Objects.requireNonNull(this).openOrCreateDatabase("Flussstrom", MODE_PRIVATE, null);
-        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS Benutzer (idBenutzer TEXT)");
 
-        ContentValues cv = new ContentValues();
-        cv.put("idBenutzer", idUser);
-
-        sqLiteDatabase.insert( "Benutzer", null, cv );
+    private void setUserID(HashMap data) {
+        DatabaseHelper db = new DatabaseHelper(this);
+        db.addUser(data);
     }
 }
