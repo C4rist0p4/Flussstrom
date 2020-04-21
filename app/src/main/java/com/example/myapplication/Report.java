@@ -17,7 +17,6 @@ import com.google.firebase.functions.FirebaseFunctions;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Objects;
 
 public class Report extends Fragment {
@@ -120,6 +119,7 @@ public class Report extends Fragment {
 
     private void showData(HashMap<String, List> data){
         try {
+
             List<HashMap> listdata = data.get("allmeldungen");
 
             assert listdata != null;

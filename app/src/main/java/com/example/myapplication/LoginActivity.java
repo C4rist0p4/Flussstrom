@@ -2,9 +2,8 @@ package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.ContentValues;
+
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,6 +17,7 @@ import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
@@ -32,6 +32,8 @@ public class LoginActivity extends AppCompatActivity {
     private String email;
     private String name;
     private String password;
+
+    private DatabaseHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +89,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void updateUI() {
+        db = new DatabaseHelper(this);
+        List<String> systemId = db.getSystemId();
+        if (systemId == null || systemId.size() == 0) {
+            getUserData();
+        }
+
         intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
@@ -143,13 +151,14 @@ public class LoginActivity extends AppCompatActivity {
                         signIn();
                     } else if(Objects.equals(result.get("message"), "Id Device set")) {
                         Log.i("Device", "Id set");
-                        setUserID(Objects.requireNonNull(result));
                         updateUI();
+                    } else if(Objects.equals(result.get("message"), "Userdata")) {
+                        Log.i("Userdate", "receive Userdata");
+                        safeUserID(result);
                     } else {
                         Toast.makeText(LoginActivity.this, "Authentication failed " + result,
                                 Toast.LENGTH_SHORT).show();
                     }
-
                 });
     }
 
@@ -161,9 +170,16 @@ public class LoginActivity extends AppCompatActivity {
                 .continueWith(task -> (HashMap) Objects.requireNonNull(task.getResult()).getData());
     }
 
+    private void getUserData() {
+        HashMap<String, String> data = new HashMap<>();
+        data.put("name", name);
 
-    private void setUserID(HashMap data) {
-        DatabaseHelper db = new DatabaseHelper(this);
+        callHttpCloudFunction("getUserData", data);
+    }
+
+    private void safeUserID(HashMap data) {
+        db = new DatabaseHelper(this);
         db.addUser(data);
+        db.addSystemId(data);
     }
 }

@@ -1,6 +1,8 @@
 package com.example.myapplication;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -10,10 +12,14 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.functions.FirebaseFunctions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 
 public class MachineryActivity extends AppCompatActivity {
@@ -25,6 +31,7 @@ public class MachineryActivity extends AppCompatActivity {
     private Report report;
     private Pictures pictures;
     private Control control;
+    private FirebaseFunctions mFunctions;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +90,7 @@ public class MachineryActivity extends AppCompatActivity {
             return fragmentTitle.get(position);
         }
     }
+
 }
 
 

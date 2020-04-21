@@ -7,10 +7,16 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -26,11 +32,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         Log.i(TAG, "onCreate");
 
-        String user = ("CREATE TABLE IF NOT EXISTS Benutzer (User_id INTEGER PRIMARY KEY, idBenutzer TEXT, anlage TEXT)");
+        String user = ("CREATE TABLE IF NOT EXISTS Benutzer (User_id INTEGER PRIMARY KEY, idBenutzer TEXT)");
         String messages = ("CREATE TABLE IF NOT EXISTS Meldungen (datum TEXT, fk_meldungstyp TEXT, bemerkungMel TEXT)");
+        String masterData  = ("CREATE TABLE IF NOT EXISTS Anlagen (idAnlagen TEXT, fk_betreiber TEXT, fk_hersteller TEXT," +
+                "fk_adresse TEXT, installationsort TEXT, inbetriebnahme TEXT, anlagenname TEXT, seriennummer TEXT, bemerkung TEXT," +
+                "aktiviert TEXT, kennung TEXT, ipaddress TEXT, tcpTriggerPort TEXT, emailenabled TEXT, leistung TEXT," +
+                "anschlusswerte TEXT, datenanschluss TEXT, tiefgang TEXT, datenblatt TEXT, handbuch TEXT, " +
+                "bemerkungtyp TEXT, bezeichnung TEXT, idAnlagentyp TEXT)");
         // Execute script.
         db.execSQL(user);
         db.execSQL(messages);
+        db.execSQL(masterData);
     }
 
     @Override
@@ -45,13 +57,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.i(TAG, "addUser" );
 
         SQLiteDatabase db = this.getWritableDatabase();
-
         ContentValues values = new ContentValues();
 
         values.put("idBenutzer", Objects.requireNonNull(data.get("idBenutzer")).toString());
-        values.put("anlage", Objects.requireNonNull(data.get("anlage")).toString());
         // Inserting Row
         db.insert("Benutzer", null, values);
+
         // Closing database connection
         db.close();
     }
@@ -61,8 +72,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query("Benutzer", new String[] { "idBenutzer",
-                        "anlage" }, "User_id=1",null,
+        Cursor cursor = db.query("Benutzer", new String[] { "idBenutzer"},
+                "User_id=1",null,
                 null, null, null);
 
         assert cursor != null;
@@ -70,9 +81,53 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.i("cursor", cursor.toString());
         List<String> user = new ArrayList<>();
         user.add(cursor.getString(0));
-        user.add(cursor.getString(1));
 
         return user;
+    }
+
+    void addSystemId(HashMap data) {
+        Log.i(TAG, "addSystem" );
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        try {
+            JSONObject jobject = new JSONObject(data.toString());
+            JSONArray jarray = jobject.getJSONArray("anlage");
+
+            for(int i=0; i < jarray.length(); i++) {
+                JSONObject jo = new JSONObject(jarray.getString(i));
+                values.put("idAnlagen", Objects.requireNonNull(jo.get("FK_Anlage").toString()));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        db.insert("Anlagen", null, values);
+        // Closing database connection
+        db.close();
+    }
+
+    List<String> getSystemId() {
+        Log.i(TAG, "getSystemId" );
+
+        String selectQuery = "SELECT * FROM Anlagen";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        assert cursor != null;
+        cursor.moveToFirst();
+        Log.i("cursor", cursor.toString());
+        List<String> SystemId = new ArrayList<>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                SystemId.add(cursor.getString(0));
+            } while (cursor.moveToNext());
+        }
+
+        return SystemId;
     }
 
     void addMessages(String date, String title, String content) {
@@ -124,4 +179,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 new String[] { String.valueOf(messages.getId()) });
         db.close();
     }*/
+
+    void addMasterData(HashMap data) {
+        Log.i(TAG, "addMasterData" );
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        HashMap dataTyp = (HashMap) data.get("fk_anlagentyp");
+        data.remove("fk_anlagentyp");
+
+        Set entrySet = data.entrySet();
+        for (Object o : entrySet) {
+            Map.Entry me = (Map.Entry) o;
+            values.put((String) me.getKey(), Objects.requireNonNull(me.getValue().toString()));
+        }
+
+        assert dataTyp != null;
+        Set entryTyp = dataTyp.entrySet();
+        for (Object o : entryTyp) {
+            Map.Entry me = (Map.Entry) o;
+            Object strVal = me.getValue();
+            if (strVal != null) {
+                values.put((String) me.getKey(), strVal.toString());
+            }
+        }
+        // Inserting Row
+        db.insert("Anlagen", null, values);
+        // Closing database connection
+        db.close();
+    }
+
+    //TODO getMasterData
 }

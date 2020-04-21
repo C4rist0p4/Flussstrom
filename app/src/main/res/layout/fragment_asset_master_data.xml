@@ -10,91 +10,231 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/assetMasterDataCV"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TableLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="10dp">
+            android:layout_height="wrap_content">
 
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/systemname_text"
+                android:layout_width="110dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
                 android:text="@string/anlagenname"
-                android:textColor="#4D4D4D" />
+                android:textColor="#4D4D4D"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/systemname"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/installationsort"
-                android:textColor="#4D4D4D" />
+                android:layout_marginLeft="32dp"
+                android:layout_marginTop="16dp"
+                android:textColor="#4D4D4D"
+                app:layout_constraintStart_toEndOf="@+id/systemname_text"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/installation_text"
+                android:layout_width="110dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
                 android:text="@string/inbetriebnahme"
-                android:textColor="#4D4D4D" />
+                android:textColor="#4D4D4D"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/systemname_text" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/installation"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginTop="16dp"
+                android:textColor="#4D4D4D"
+                app:layout_constraintStart_toEndOf="@+id/installation_text"
+                app:layout_constraintTop_toBottomOf="@+id/systemname" />
+
+
+            <TextView
+                android:id="@+id/installationLocation_text"
+                android:layout_width="110dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/installationsort"
+                android:textColor="#4D4D4D"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/installation_text" />
+
+            <TextView
+                android:id="@+id/installationLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="32dp"
+                android:layout_marginTop="16dp"
+                android:textColor="#4D4D4D"
+                app:layout_constraintStart_toEndOf="@+id/installationLocation_text"
+                app:layout_constraintTop_toBottomOf="@+id/installation" />
+
+            <TextView
+                android:id="@+id/serialNumber_text"
+                android:layout_width="110dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
                 android:text="@string/seriennummer"
-                android:textColor="#4D4D4D" />
+                android:textColor="#4D4D4D"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/installationLocation_text" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/serialNumber"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginTop="16dp"
+                android:textColor="#4D4D4D"
+                app:layout_constraintStart_toEndOf="@+id/serialNumber_text"
+                app:layout_constraintTop_toBottomOf="@+id/installationLocation" />
+
+
+            <TextView
+                android:id="@+id/power_text"
+                android:layout_width="110dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
                 android:text="@string/leistung"
-                android:textColor="#4D4D4D" />
+                android:textColor="#4D4D4D"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/serialNumber_text" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/power"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginTop="16dp"
+                android:textColor="#4D4D4D"
+                app:layout_constraintStart_toEndOf="@+id/power_text"
+                app:layout_constraintTop_toBottomOf="@+id/serialNumber" />
+
+            <TextView
+                android:id="@+id/connectedValues_text"
+                android:layout_width="110dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
                 android:text="@string/anschlusswerte"
-                android:textColor="#4D4D4D" />
+                android:textColor="#4D4D4D"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/power_text" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/connectedValues"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginTop="16dp"
+                android:textColor="#4D4D4D"
+                app:layout_constraintStart_toEndOf="@+id/connectedValues_text"
+                app:layout_constraintTop_toBottomOf="@+id/power" />
+
+            <TextView
+                android:id="@+id/dataConnection_text"
+                android:layout_width="110dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
                 android:text="@string/datenanschluss"
-                android:textColor="#4D4D4D" />
+                android:textColor="#4D4D4D"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/connectedValues_text" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/dataConnection"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginTop="16dp"
+                android:textColor="#4D4D4D"
+                app:layout_constraintStart_toEndOf="@+id/dataConnection_text"
+                app:layout_constraintTop_toBottomOf="@+id/connectedValues" />
+
+            <TextView
+                android:id="@+id/draft_text"
+                android:layout_width="110dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
                 android:text="@string/tiefgang"
-                android:textColor="#4D4D4D" />
+                android:textColor="#4D4D4D"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/dataConnection_text" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/draft"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginTop="16dp"
+                android:textColor="#4D4D4D"
+                app:layout_constraintStart_toEndOf="@+id/draft_text"
+                app:layout_constraintTop_toBottomOf="@+id/dataConnection" />
+
+            <TextView
+                android:id="@+id/dataSheet_text"
+                android:layout_width="110dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
                 android:text="@string/datenblatt"
-                android:textColor="#4D4D4D" />
+                android:textColor="#4D4D4D"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/draft_text" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/dataSheet"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginTop="16dp"
+                android:textColor="#4D4D4D"
+                app:layout_constraintStart_toEndOf="@+id/dataSheet_text"
+                app:layout_constraintTop_toBottomOf="@+id/draft" />
+
+            <TextView
+                android:id="@+id/comment_text"
+                android:layout_width="110dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
                 android:text="@string/bemerkung"
-                android:textColor="#4D4D4D" />
-        </TableLayout>
+                android:textColor="#4D4D4D"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/dataSheet_text" />
+
+            <TextView
+                android:id="@+id/comment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginTop="16dp"
+                android:textColor="#4D4D4D"
+                app:layout_constraintStart_toEndOf="@+id/comment_text"
+                app:layout_constraintTop_toBottomOf="@+id/dataSheet" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>
