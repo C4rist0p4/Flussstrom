@@ -2,7 +2,6 @@ package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,7 +29,7 @@ public class LoginActivity extends AppCompatActivity {
     private Intent intent;
 
     private String email;
-    private String name;
+    private  String name;
     private String password;
 
     private DatabaseHelper db;
@@ -52,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if (currentUser != null) {
-            updateUI();
+            startMainActvity();
         }
     }
 
@@ -74,27 +73,23 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void signIn() {
+    private void authenticationWithFirebase() {
         mAuth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this, task -> {
                 if (task.isSuccessful()) {
                     // Sign in success, update UI with the signed-in user's information
                     Log.i("success", "signInWithEmail:success");
-                    updateUI();
+                    getUserData(name);
+
                 } else {
+                    //Create New Useser in Firebase
                     Log.w("Create new User", "createUserWithEmail", task.getException());
-                    createUser();
+                    addUserToFirebase();
                 }
             });
     }
 
-    private void updateUI() {
-        db = new DatabaseHelper(this);
-        List<String> systemId = db.getSystemId();
-        if (systemId == null || systemId.size() == 0) {
-            getUserData();
-        }
-
+    private void startMainActvity() {
         intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
@@ -104,12 +99,21 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void createUser() {
+    private void checkSystemId() {
+        db = new DatabaseHelper(this);
+        List<String> systemId = db.getSystemId();
+
+        if (systemId == null || systemId.size() == 0) {
+            getUserData("name");
+        }
+    }
+
+    public void addUserToFirebase() {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         Log.i("success", "createUserWithEmail success");
-                        getInstanceId();
+                        setTokensToMariaDB(name);
                     } else {
                         Log.w("failure", "createUserWithEmail failure", task.getException());
                         Toast.makeText(LoginActivity.this, "Create User failed.",
@@ -118,7 +122,7 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-    private void getInstanceId() {
+    private void setTokensToMariaDB(String n) {
         FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnCompleteListener(task1 -> {
                     if (!task1.isSuccessful()) {
@@ -129,7 +133,7 @@ public class LoginActivity extends AppCompatActivity {
                     String token = Objects.requireNonNull(task1.getResult()).getToken();
                     HashMap<String, Object> data = new HashMap<>();
 
-                    data.put("name", name);
+                    data.put("name", n);
                     data.put("idDevice", token);
 
                     callHttpCloudFunction("setIdDevice", data);
@@ -148,10 +152,10 @@ public class LoginActivity extends AppCompatActivity {
                     assert result != null;
 
                     if (Objects.equals(result.get("message"), "true")) {
-                        signIn();
+                        authenticationWithFirebase();
                     } else if(Objects.equals(result.get("message"), "Id Device set")) {
                         Log.i("Device", "Id set");
-                        updateUI();
+                        getUserData(name);
                     } else if(Objects.equals(result.get("message"), "Userdata")) {
                         Log.i("Userdate", "receive Userdata");
                         safeUserID(result);
@@ -170,9 +174,9 @@ public class LoginActivity extends AppCompatActivity {
                 .continueWith(task -> (HashMap) Objects.requireNonNull(task.getResult()).getData());
     }
 
-    private void getUserData() {
+    private void getUserData(String n) {
         HashMap<String, String> data = new HashMap<>();
-        data.put("name", name);
+        data.put("name", n);
 
         callHttpCloudFunction("getUserData", data);
     }
@@ -181,5 +185,7 @@ public class LoginActivity extends AppCompatActivity {
         db = new DatabaseHelper(this);
         db.addUser(data);
         db.addSystemId(data);
+
+        startMainActvity();
     }
 }

@@ -9,9 +9,7 @@ public class Messages implements Serializable {
     private String messagesContent;
     private String messagesDate;
 
-    Messages() {
-
-    }
+    Messages() {}
 
     public Messages(String date, String title, String content) {
         this.messagesDate= date;

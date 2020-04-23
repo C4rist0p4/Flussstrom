@@ -63,5 +63,9 @@
     <string name="temperatur">Temperatur</string>
     <string name="rueckspeiseeinheit">Rückspeiseeinheit</string>
     <string name="alarm">Alarm</string>
+    <string name="generated_power">Erzeugte Leistung</string>
+    <string name="generated_power24">Leistung 24</string>
+    <string name="performance_average">Leistung	Durchschnitt</string>
+    <string name="percent_of_the_average">Prozent vom Durchschnitt</string>
 
 </resources>

@@ -36,7 +36,6 @@ public class AssetMasterData extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mFunctions = FirebaseFunctions.getInstance();
-
     }
 
     @Override
@@ -54,42 +53,22 @@ public class AssetMasterData extends Fragment {
         dataSheet = view.findViewById(R.id.dataSheet);
         comment = view.findViewById(R.id.comment);
 
-        getMachineryData();
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            String name = bundle.getString("1");
+            getMachineryData(name);
+        }
         // Inflate the layout for this fragment
         return view;
     }
 
-    private void getMachineryData() {
-
-        addMessage()
-                .addOnCompleteListener(task -> {
-                    if (!task.isSuccessful()) {
-                        Exception e = task.getException();
-                        Log.w("TAG", "addMessage:onFailure", e);
-                        Toast.makeText(Objects.requireNonNull(getActivity()).getApplicationContext(), "An error occurred."
-                                , Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    HashMap result = task.getResult();
-                    assert result != null;
-                    showMachineryData(result);
-                    safeData(result);
-                });
-    }
-
-    private Task<HashMap> addMessage() {
-
+    private void getMachineryData(String name) {
         DatabaseHelper db = new DatabaseHelper(getActivity());
-        List SystemId = db.getSystemId();
+        HashMap SystemId = db.getSystemDetails(name);
 
-        HashMap<String, Object> data = new HashMap<>();
-        data.put("idAnlage", SystemId.get(0));
-
-        return mFunctions
-                .getHttpsCallable("getMachinery")
-                .call(data)
-                .continueWith(task -> (HashMap) Objects.requireNonNull(task.getResult()).getData());
+        showMachineryData(SystemId);
     }
+
 
     private void showMachineryData(HashMap data) {
         systemname.append(Objects.requireNonNull(data.get("anlagenname")).toString());
@@ -97,19 +76,10 @@ public class AssetMasterData extends Fragment {
         installation.append(Objects.requireNonNull(data.get("inbetriebnahme")).toString());
         serialNumber.append(Objects.requireNonNull(data.get("seriennummer")).toString());
         comment.append(Objects.requireNonNull(data.get("bemerkung")).toString());
-
-        HashMap dataTyp = (HashMap) data.get("fk_anlagentyp");
-        assert dataTyp != null;
-
-        power.append(Objects.requireNonNull(dataTyp.get("leistung")).toString());
-        connectedValues.append(Objects.requireNonNull(dataTyp.get("anschlusswerte")).toString());
-        dataConnection.append(Objects.requireNonNull(dataTyp.get("datenanschluss")).toString());
-        draft.append(Objects.requireNonNull(dataTyp.get("tiefgang")).toString());
-        dataSheet.append(Objects.requireNonNull(dataTyp.get("datenblatt")).toString());
-    }
-
-    private void safeData(HashMap machinery) {
-        DatabaseHelper db = new DatabaseHelper(getActivity());
-        db.addMasterData(machinery);
+        power.append(Objects.requireNonNull(data.get("leistung")).toString());
+        connectedValues.append(Objects.requireNonNull(data.get("anschlusswerte")).toString());
+        dataConnection.append(Objects.requireNonNull(data.get("datenanschluss")).toString());
+        draft.append(Objects.requireNonNull(data.get("tiefgang")).toString());
+        dataSheet.append(Objects.requireNonNull(data.get("datenblatt")).toString());
     }
 }

@@ -49,7 +49,7 @@
                 android:layout_marginBottom="8dp"
                 android:text="@string/Eingespeiste_Leistung"
                 android:textColor="#000"
-                android:textSize="18sp"
+                android:textSize="25dp"
                 android:textStyle="bold" />
 
             <TextView
@@ -57,6 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="@string/Leistung_24h"
+                android:textSize="16dp"
                 android:textColor="#4D4D4D" />
 
             <TextView
@@ -64,6 +65,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="@string/Leistung_Durchschnitt"
+                android:textSize="16dp"
                 android:textColor="#4D4D4D" />
 
             <TextView
@@ -71,126 +73,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="@string/Prozent_vom_Durchschnitt"
+                android:textSize="16dp"
                 android:textColor="#4D4D4D" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/FlottilleCV"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="15dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/leistungCV">
-
-        <TableLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <TextView
-                android:id="@+id/flottilleTV"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="1dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:text="@string/MD_Flottille_1"
-                android:textColor="#000"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="@string/Erzeugte_Leistung"
-                android:textColor="#000"
-                android:textSize="15sp" />
-
-            <TableRow android:layout_marginTop="25dp">
-
-                <TextView
-                    android:id="@+id/GeneratorTV"
-                    android:text="@string/Generatoreinheit_1"
-                    android:textColor="#999999" />
-
-                <TextView
-                    android:layout_height="10dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginLeft="10dp"
-                    android:background="@drawable/circular" />
-            </TableRow>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/Leistung_24h"
-                android:textColor="#4D4D4D" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/Erzeugte_Leistung"
-                android:textColor="#4D4D4D" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/Prozent_vom_Durchschnitt"
-                android:textColor="#4D4D4D" />
-
-            <TableRow android:layout_marginTop="25dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-
-                    android:text="@string/Generatoreinheit_2"
-                    android:textColor="#999999" />
-
-                <TextView
-                    android:layout_height="10dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginLeft="10dp"
-                    android:background="@drawable/circular" />
-            </TableRow>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/Leistung_24h"
-                android:textColor="#4D4D4D" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/Erzeugte_Leistung"
-                android:textColor="#4D4D4D" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/Prozent_vom_Durchschnitt"
-                android:textColor="#4D4D4D" />
-
-        </TableLayout>
-    </androidx.cardview.widget.CardView>
-
-
+        app:layout_constraintTop_toBottomOf="@+id/leistungCV" />
 </androidx.constraintlayout.widget.ConstraintLayout>

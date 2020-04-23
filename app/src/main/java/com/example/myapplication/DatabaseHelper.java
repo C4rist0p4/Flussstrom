@@ -39,10 +39,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "aktiviert TEXT, kennung TEXT, ipaddress TEXT, tcpTriggerPort TEXT, emailenabled TEXT, leistung TEXT," +
                 "anschlusswerte TEXT, datenanschluss TEXT, tiefgang TEXT, datenblatt TEXT, handbuch TEXT, " +
                 "bemerkungtyp TEXT, bezeichnung TEXT, idAnlagentyp TEXT)");
+        String systemIdData  = ("CREATE TABLE IF NOT EXISTS SystemId (Id INTEGER PRIMARY KEY, SystemId NUMBER)");
         // Execute script.
         db.execSQL(user);
         db.execSQL(messages);
         db.execSQL(masterData);
+        db.execSQL(systemIdData);
     }
 
     @Override
@@ -81,7 +83,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.i("cursor", cursor.toString());
         List<String> user = new ArrayList<>();
         user.add(cursor.getString(0));
-
+        db.close();
         return user;
     }
 
@@ -97,13 +99,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             for(int i=0; i < jarray.length(); i++) {
                 JSONObject jo = new JSONObject(jarray.getString(i));
-                values.put("idAnlagen", Objects.requireNonNull(jo.get("FK_Anlage").toString()));
+                values.put("SystemId", Objects.requireNonNull(jo.get("FK_Anlage").toString()));
+                db.insert("SystemId", null, values);
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        db.insert("Anlagen", null, values);
         // Closing database connection
         db.close();
     }
@@ -111,22 +112,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     List<String> getSystemId() {
         Log.i(TAG, "getSystemId" );
 
-        String selectQuery = "SELECT * FROM Anlagen";
+        String selectQuery = "SELECT * FROM SystemId";
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
         assert cursor != null;
-        cursor.moveToFirst();
-        Log.i("cursor", cursor.toString());
+
         List<String> SystemId = new ArrayList<>();
 
+        int index = cursor.getColumnIndex("SystemId");
         if (cursor.moveToFirst()) {
             do {
-                SystemId.add(cursor.getString(0));
+                SystemId.add(cursor.getString(index));
             } while (cursor.moveToNext());
         }
-
+        db.close();
         return SystemId;
     }
 
@@ -167,7 +168,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 messagesList.add(messages);
             } while (cursor.moveToNext());
         }
-
+        db.close();
         return messagesList;
     }
 
@@ -210,5 +211,59 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    //TODO getMasterData
+    HashMap getSystemDetails(String name) {
+       Log.i(TAG, "getSystemDetails" );
+
+       String selectQuery = "SELECT * FROM Anlagen WHERE anlagenname = '"+name+"'" ;
+       SQLiteDatabase db = this.getWritableDatabase();
+       Cursor cursor = db.rawQuery(selectQuery, null);
+
+       assert cursor != null;
+       String[] columnNames = cursor.getColumnNames();
+
+        HashMap<String,String> temp = new HashMap<>();
+
+        cursor.moveToFirst();
+        for (String columnName : columnNames) {
+            int index = cursor.getColumnIndex(columnName);
+            String str = cursor.getString(index);
+
+            temp.put(columnName, str);
+        }
+
+        db.close();
+       return temp;
+   }
+
+    ArrayList<SystemItem> getSystemItem() {
+       Log.i(TAG, "getSystemItem" );
+
+       ArrayList<SystemItem> systemList = new ArrayList<>();
+
+       String selectQuery = "SELECT * FROM Anlagen";
+       SQLiteDatabase db = this.getWritableDatabase();
+       Cursor cursor = db.rawQuery(selectQuery, null);
+
+       if (cursor.moveToFirst()) {
+           do {
+               String name = cursor.getString(6);
+               SystemItem systemItem = new SystemItem(name, "2", "2");
+               systemList.add(systemItem);
+
+           } while (cursor.moveToNext());
+       }
+        db.close();
+        return systemList;
+   }
+
+   int countSystemes() {
+       SQLiteDatabase db = this.getWritableDatabase();
+       String count = "SELECT count(*) FROM Anlagen";
+
+       Cursor mcursor = db.rawQuery(count, null);
+
+       mcursor.moveToFirst();
+
+       return mcursor.getInt(0);
+   }
 }

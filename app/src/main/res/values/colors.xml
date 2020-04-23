@@ -7,4 +7,6 @@
     <color name="colorBlack">#000</color>
     <color name="colorBlue">#3D8BCD</color>
     <color name="colorTabIndicator">#F1FB8F</color>
+    <color name="textSystemItem">#4D4D4D</color>
+    <color name="systemItemGenerator">#999999</color>
 </resources>

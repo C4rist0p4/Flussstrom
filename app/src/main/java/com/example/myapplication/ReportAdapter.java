@@ -13,9 +13,9 @@ import java.util.ArrayList;
 
 public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ReportViewHolder> {
     private Context context;
-    private ArrayList<ReportItme> reportList;
+    private ArrayList<ReportItem> reportList;
 
-    public ReportAdapter(Context mContext, ArrayList<ReportItme> list) {
+    ReportAdapter(Context mContext, ArrayList<ReportItem> list) {
         context = mContext;
         reportList = list;
     }
@@ -29,7 +29,7 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ReportView
 
     @Override
     public void onBindViewHolder(@NonNull ReportViewHolder holder, int position) {
-        ReportItme currentItem = reportList.get(position);
+        ReportItem currentItem = reportList.get(position);
 
         String bemerkungMel = currentItem.getBemerkungMel();
         String date = currentItem.getDate();
@@ -45,12 +45,12 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ReportView
         return reportList.size();
     }
 
-    public class ReportViewHolder extends RecyclerView.ViewHolder {
+    class ReportViewHolder extends RecyclerView.ViewHolder {
         private TextView meldungstypTV;
         private TextView dateTV;
         private  TextView bemerkungMelTV;
 
-        public ReportViewHolder(@NonNull View itemView) {
+        ReportViewHolder(@NonNull View itemView) {
             super(itemView);
             meldungstypTV = itemView.findViewById(R.id.meldungstypTV);
             dateTV = itemView.findViewById(R.id.dateTV);

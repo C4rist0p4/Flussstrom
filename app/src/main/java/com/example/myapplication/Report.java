@@ -23,7 +23,7 @@ public class Report extends Fragment {
     private FirebaseFunctions mFunctions;
     private RecyclerView recyclerView;
     private ReportAdapter reportAdapter;
-    private ArrayList<ReportItme> arrayList;
+    private ArrayList<ReportItem> arrayList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,7 +53,7 @@ public class Report extends Fragment {
         }
         return view;
     }
-
+    //change loop to databasehandler
     private void databaseToUI(List<Messages> listMessages) {
         try {
 
@@ -62,7 +62,7 @@ public class Report extends Fragment {
                 String bemerkungMel = messages.getMessagesTitle();
                 String fk_meldungstyp = messages.getMessagesContent();
 
-                arrayList.add(new ReportItme(datum, fk_meldungstyp, bemerkungMel));
+                arrayList.add(new ReportItem(datum, fk_meldungstyp, bemerkungMel));
             }
 
             reportAdapter = new ReportAdapter(getActivity(), arrayList);
@@ -130,7 +130,7 @@ public class Report extends Fragment {
                 String bemerkungMel = meldungen.get("bemerkungMel");
                 String fk_meldungstyp = String.valueOf(meldungen.get("fk_meldungstyp"));
 
-                arrayList.add(new ReportItme(datum, fk_meldungstyp, bemerkungMel));
+                arrayList.add(new ReportItem(datum, fk_meldungstyp, bemerkungMel));
             }
 
             reportAdapter = new ReportAdapter(getActivity(), arrayList);

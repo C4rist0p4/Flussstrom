@@ -1,23 +1,23 @@
 package com.example.myapplication;
 
-public class ReportItme {
+class ReportItem {
     private String reportDate;
     private String meldungstyp;
     private String bemerkungMel;
 
-    public ReportItme(String date, String meldung, String bemerkung) {
+    ReportItem(String date, String meldung, String bemerkung) {
         reportDate = date;
         meldungstyp = meldung;
         bemerkungMel = bemerkung;
     }
 
-    public String getDate() { return reportDate; }
+    String getDate() { return reportDate; }
 
-    public String getMeldungstyp() {
+    String getMeldungstyp() {
         return meldungstyp;
     }
 
-    public String getBemerkungMel() {
+    String getBemerkungMel() {
         return bemerkungMel;
     }
 }
