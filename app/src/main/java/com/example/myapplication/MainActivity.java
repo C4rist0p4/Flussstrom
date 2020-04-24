@@ -9,15 +9,22 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.annotation.LongDef;
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.iid.FirebaseInstanceId;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -73,13 +80,15 @@ public class MainActivity extends AppCompatActivity implements SystemAdapter.OnS
         recyclerView.setAdapter(systemAdapter);
     }
 
-    private void showSystems(HashMap mapSystem) {
+    private void showSystemsFromCall(ArrayList<HashMap> mapSystem) {
         ArrayList<SystemItem> systemList = new ArrayList<>();
 
-        String name = Objects.requireNonNull(mapSystem.get("anlagenname")).toString();
-        SystemItem systemItem = new SystemItem(name, "2", "2");
-        systemList.add(systemItem);
-        listSystem = systemList;
+        for (HashMap System : mapSystem){
+            String name = Objects.requireNonNull(System.get("anlagenname")).toString();
+            SystemItem systemItem = new SystemItem(name, "2", "2");
+            systemList.add(systemItem);
+            listSystem = systemList;
+        }
 
         SystemAdapter systemAdapter = new SystemAdapter(this, listSystem, this);
         recyclerView.setAdapter(systemAdapter);
@@ -130,12 +139,10 @@ public class MainActivity extends AppCompatActivity implements SystemAdapter.OnS
         DatabaseHelper db = new DatabaseHelper(this);
         List<String> SystemId = db.getSystemId();
 
-        for(int i=0; i < SystemId.size(); i++) {
-            getMachineryData(SystemId.get(i));
-        }
+        getMachineryData(SystemId);
     }
-    // backend anpassen
-    private void getMachineryData(String SystemId) {
+
+    private void getMachineryData(List<String> SystemId) {
         addMessage(SystemId)
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful()) {
@@ -145,27 +152,35 @@ public class MainActivity extends AppCompatActivity implements SystemAdapter.OnS
                                 , Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    HashMap result = task.getResult();
+                    ArrayList result = task.getResult();
                     assert result != null;
 
+                    showSystemsFromCall(result);
                     safeData(result);
-                    showSystems(result);
                 });
     }
 
-    private Task<HashMap> addMessage(String SystemId) {
+    private Task<ArrayList> addMessage(List<String> systemId) {
+
         HashMap<String, Object> data = new HashMap<>();
-        data.put("idAnlage", SystemId);
+        ArrayList<HashMap<String, String>> idList = new ArrayList<>();
+        
+        for(String id : systemId){
+            HashMap<String, String> jid = new HashMap<>();
+            jid.put("id", id);
+            idList.add(jid);
+        }
+        data.put("idAnlagen", idList);
 
         return mFunctions
                 .getHttpsCallable("getMachinery")
                 .call(data)
-                .continueWith(task -> (HashMap) Objects.requireNonNull(task.getResult()).getData());
+                .continueWith(task -> (ArrayList) Objects.requireNonNull(task.getResult()).getData());
+
     }
 
-    private void safeData(HashMap machinery) {
+    private void safeData(ArrayList machinery) {
         DatabaseHelper db = new DatabaseHelper(this);
         db.addMasterData(machinery);
     }
-
 }

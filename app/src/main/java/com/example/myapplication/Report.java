@@ -18,12 +18,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.SplittableRandom;
 
 public class Report extends Fragment {
     private FirebaseFunctions mFunctions;
     private RecyclerView recyclerView;
     private ReportAdapter reportAdapter;
     private ArrayList<ReportItem> arrayList;
+    private String systemName = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,30 +44,27 @@ public class Report extends Fragment {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-        DatabaseHelper db = new DatabaseHelper(getActivity());
-        List<Messages> listMessages = db.getAllMessages();
 
-        if(listMessages != null && listMessages.size() > 0){
-            databaseToUI(listMessages);
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            systemName = bundle.getString("SystemName");
+        }
+
+        DatabaseHelper db = new DatabaseHelper(getActivity());
+        ArrayList<ReportItem> listReport = db.getAllMessages(systemName);
+
+        if(listReport != null && listReport.size() > 0) {
+            databaseToUI(listReport);
         }
         else {
-            getData();
+            getData(systemName);
         }
         return view;
     }
-    //change loop to databasehandler
-    private void databaseToUI(List<Messages> listMessages) {
+
+    private void databaseToUI(ArrayList<ReportItem> listReport) {
         try {
-
-            for (Messages messages : listMessages) {
-                String datum = messages.getMessagesDate();
-                String bemerkungMel = messages.getMessagesTitle();
-                String fk_meldungstyp = messages.getMessagesContent();
-
-                arrayList.add(new ReportItem(datum, fk_meldungstyp, bemerkungMel));
-            }
-
-            reportAdapter = new ReportAdapter(getActivity(), arrayList);
+            reportAdapter = new ReportAdapter(getActivity(), listReport);
             recyclerView.setAdapter(reportAdapter);
         } catch (Exception e) {
             e.printStackTrace();
@@ -74,20 +73,11 @@ public class Report extends Fragment {
 
     private void safeData(HashMap data) {
         DatabaseHelper db = new DatabaseHelper(getActivity());
-
-        ArrayList<HashMap> arrlist = (ArrayList<HashMap>) data.get("allmeldungen");
-
-        assert arrlist != null;
-        for (HashMap<String, String> element : arrlist) {
-            db.addMessages(element.get("datum"),
-                    element.get("bemerkungMel"),
-                    String.valueOf(element.get("fk_meldungstyp"))
-            );
-        }
+        db.setMessages(systemName, data);
     }
 
-    private void getData() {
-        addMessage()
+    private void getData(String sysname) {
+        addMessage(sysname)
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful()) {
                         Exception e = task.getException();
@@ -103,13 +93,14 @@ public class Report extends Fragment {
                 });
     }
 
-    private Task<HashMap> addMessage() {
-
+    private Task<HashMap> addMessage(String sysname) {
         DatabaseHelper db = new DatabaseHelper(getActivity());
-        List user = db.getUser();
+
+        HashMap systemDetails = db.getSystemDetails(sysname);
+        String idAnlagen = systemDetails.get("idAnlagen").toString();
 
         HashMap<String, Object> data = new HashMap<>();
-        data.put("fk_anlagen", user.get(1));
+        data.put("fk_anlagen", idAnlagen);
 
         return mFunctions
                 .getHttpsCallable("getMeldung")
@@ -119,7 +110,6 @@ public class Report extends Fragment {
 
     private void showData(HashMap<String, List> data){
         try {
-
             List<HashMap> listdata = data.get("allmeldungen");
 
             assert listdata != null;
@@ -132,10 +122,8 @@ public class Report extends Fragment {
 
                 arrayList.add(new ReportItem(datum, fk_meldungstyp, bemerkungMel));
             }
-
             reportAdapter = new ReportAdapter(getActivity(), arrayList);
             recyclerView.setAdapter(reportAdapter);
-
         } catch (Exception e) {
             e.printStackTrace();
         }

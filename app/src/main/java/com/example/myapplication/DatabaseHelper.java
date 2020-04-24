@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -33,7 +34,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.i(TAG, "onCreate");
 
         String user = ("CREATE TABLE IF NOT EXISTS Benutzer (User_id INTEGER PRIMARY KEY, idBenutzer TEXT)");
-        String messages = ("CREATE TABLE IF NOT EXISTS Meldungen (datum TEXT, fk_meldungstyp TEXT, bemerkungMel TEXT)");
+        String messages = ("CREATE TABLE IF NOT EXISTS Meldungen (systemname TEXT, datum TEXT, fk_meldungstyp TEXT, bemerkungMel TEXT, timestamp_device TEXT)");
         String masterData  = ("CREATE TABLE IF NOT EXISTS Anlagen (idAnlagen TEXT, fk_betreiber TEXT, fk_hersteller TEXT," +
                 "fk_adresse TEXT, installationsort TEXT, inbetriebnahme TEXT, anlagenname TEXT, seriennummer TEXT, bemerkung TEXT," +
                 "aktiviert TEXT, kennung TEXT, ipaddress TEXT, tcpTriggerPort TEXT, emailenabled TEXT, leistung TEXT," +
@@ -131,28 +132,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return SystemId;
     }
 
-    void addMessages(String date, String title, String content) {
-        Log.i(TAG, "addMessages" );
+    void setMessages(String systemName, HashMap data) {
+        Log.i(TAG, "setMessages");
 
         SQLiteDatabase db = this.getWritableDatabase();
-
         ContentValues values = new ContentValues();
+        ArrayList<HashMap> messages = (ArrayList<HashMap>) data.get("allmeldungen");
 
-        values.put("datum",date );
-        values.put("fk_meldungstyp", title);
-        values.put("bemerkungMel", content);
+        assert messages != null;
+        for(HashMap hashMap : messages) {
+            hashMap.remove("fk_anlagen");
+            hashMap.put("systemname", systemName);
 
-        db.insert("Meldungen", null, values);
-
+            Set entrySet = hashMap.entrySet();
+            for (Object o : entrySet) {
+                Map.Entry me = (Map.Entry) o;
+                values.put((String) me.getKey(), Objects.requireNonNull(me.getValue().toString()));
+            }
+            db.insert("Meldungen", null, values);
+        }
         db.close();
     }
 
-    List<Messages> getAllMessages() {
-        Log.i(TAG, "getAllNotes ... " );
+    ArrayList<ReportItem> getAllMessages(String SystemName) {
+        Log.i(TAG, "getAllMessages" );
 
-        List<Messages> messagesList = new ArrayList<>();
+        ArrayList<ReportItem> itemsList = new ArrayList<>();
 
-        String selectQuery = "SELECT * FROM Meldungen";
+        String selectQuery = "SELECT * FROM Meldungen WHERE systemname = '"+SystemName +"'";
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -160,16 +167,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                Messages messages = new Messages();
-                messages.setMessagesDate(cursor.getString(0));
-                messages.setMessagesTitle(cursor.getString(1));
-                messages.setMessagesContent(cursor.getString(2));
+                ReportItem reportItem = new ReportItem();
+                reportItem.setDate(cursor.getString(1));
+                reportItem.setMeldungstyp(cursor.getString(2));
+                reportItem.setBemerkungMel(cursor.getString(3));
 
-                messagesList.add(messages);
+                itemsList.add(reportItem);
             } while (cursor.moveToNext());
         }
         db.close();
-        return messagesList;
+        return itemsList;
     }
 
 /*    public void deleteMessages(Messages messages) {
@@ -181,32 +188,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }*/
 
-    void addMasterData(HashMap data) {
+    void addMasterData(ArrayList<HashMap> data_) {
         Log.i(TAG, "addMasterData" );
+
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        HashMap dataTyp = (HashMap) data.get("fk_anlagentyp");
-        data.remove("fk_anlagentyp");
+        for (HashMap data : data_){
+            HashMap dataTyp = (HashMap) data.get("fk_anlagentyp");
+            data.remove("fk_anlagentyp");
 
-        Set entrySet = data.entrySet();
-        for (Object o : entrySet) {
-            Map.Entry me = (Map.Entry) o;
-            values.put((String) me.getKey(), Objects.requireNonNull(me.getValue().toString()));
-        }
-
-        assert dataTyp != null;
-        Set entryTyp = dataTyp.entrySet();
-        for (Object o : entryTyp) {
-            Map.Entry me = (Map.Entry) o;
-            Object strVal = me.getValue();
-            if (strVal != null) {
-                values.put((String) me.getKey(), strVal.toString());
+            Set entrySet = data.entrySet();
+            for (Object o : entrySet) {
+                Map.Entry me = (Map.Entry) o;
+                values.put((String) me.getKey(), Objects.requireNonNull(me.getValue().toString()));
             }
+
+            assert dataTyp != null;
+            Set entryTyp = dataTyp.entrySet();
+            for (Object o : entryTyp) {
+                Map.Entry me = (Map.Entry) o;
+                Object strVal = me.getValue();
+                if (strVal != null) {
+                    values.put((String) me.getKey(), strVal.toString());
+                }
+            }
+            // Inserting Row
+            db.insert("Anlagen", null, values);
         }
-        // Inserting Row
-        db.insert("Anlagen", null, values);
         // Closing database connection
         db.close();
     }

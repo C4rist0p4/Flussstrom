@@ -55,7 +55,7 @@ public class AssetMasterData extends Fragment {
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
-            String name = bundle.getString("1");
+            String name = bundle.getString("SystemName");
             getMachineryData(name);
         }
         // Inflate the layout for this fragment

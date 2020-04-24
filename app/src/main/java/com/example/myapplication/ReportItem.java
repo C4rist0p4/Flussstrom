@@ -5,6 +5,8 @@ class ReportItem {
     private String meldungstyp;
     private String bemerkungMel;
 
+    ReportItem(){}
+
     ReportItem(String date, String meldung, String bemerkung) {
         reportDate = date;
         meldungstyp = meldung;
@@ -13,11 +15,15 @@ class ReportItem {
 
     String getDate() { return reportDate; }
 
+    void setDate(String date) { this.reportDate = date; }
+
     String getMeldungstyp() {
         return meldungstyp;
     }
 
-    String getBemerkungMel() {
-        return bemerkungMel;
-    }
+    void setMeldungstyp(String meldungstyp) { this.meldungstyp = meldungstyp; }
+
+    String getBemerkungMel() { return bemerkungMel; }
+
+    void setBemerkungMel(String bemerkungMel) { this.bemerkungMel = bemerkungMel; }
 }

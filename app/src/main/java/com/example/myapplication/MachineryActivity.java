@@ -45,8 +45,9 @@ public class MachineryActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String name = intent.getStringExtra("name");
         Bundle bundle = new Bundle();
-        bundle.putString("1", name);
+        bundle.putString("SystemName", name);
         assetMasterData.setArguments(bundle);
+        report.setArguments(bundle);
 
         ViewPagerAdapter viewPagerAdaper = new ViewPagerAdapter(getSupportFragmentManager(), 0);
         viewPagerAdaper.addFragment(assetMasterData, "Anlagenstammdaten");
@@ -55,7 +56,6 @@ public class MachineryActivity extends AppCompatActivity {
         viewPagerAdaper.addFragment(report, "Meldung");
         viewPagerAdaper.addFragment(pictures, "Bilder");
         viewPagerAdaper.addFragment(control, "Steuerung");
-
 
         viewPager.setAdapter(viewPagerAdaper);
     }
