@@ -34,18 +34,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.i(TAG, "onCreate");
 
         String user = ("CREATE TABLE IF NOT EXISTS Benutzer (User_id INTEGER PRIMARY KEY, idBenutzer TEXT)");
-        String messages = ("CREATE TABLE IF NOT EXISTS Meldungen (systemname TEXT, datum TEXT, fk_meldungstyp TEXT, bemerkungMel TEXT, timestamp_device TEXT)");
+        String messages = ("CREATE TABLE IF NOT EXISTS Meldungen (SystemName TEXT, datum TEXT, fk_meldungstyp TEXT, bemerkungMel TEXT, timestamp_device TEXT)");
         String masterData  = ("CREATE TABLE IF NOT EXISTS Anlagen (idAnlagen TEXT, fk_betreiber TEXT, fk_hersteller TEXT," +
                 "fk_adresse TEXT, installationsort TEXT, inbetriebnahme TEXT, anlagenname TEXT, seriennummer TEXT, bemerkung TEXT," +
                 "aktiviert TEXT, kennung TEXT, ipaddress TEXT, tcpTriggerPort TEXT, emailenabled TEXT, leistung TEXT," +
                 "anschlusswerte TEXT, datenanschluss TEXT, tiefgang TEXT, datenblatt TEXT, handbuch TEXT, " +
                 "bemerkungtyp TEXT, bezeichnung TEXT, idAnlagentyp TEXT)");
         String systemIdData  = ("CREATE TABLE IF NOT EXISTS SystemId (Id INTEGER PRIMARY KEY, SystemId NUMBER)");
+        String measuring = ("CREATE TABLE IF NOT EXISTS  Measuring(Id INTEGER PRIMARY KEY, SystemName TEXT, datum DATE, timestamp_device TIME, messwert TEXT)");
         // Execute script.
         db.execSQL(user);
         db.execSQL(messages);
         db.execSQL(masterData);
         db.execSQL(systemIdData);
+        db.execSQL(measuring);
     }
 
     @Override
@@ -142,7 +144,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         assert messages != null;
         for(HashMap hashMap : messages) {
             hashMap.remove("fk_anlagen");
-            hashMap.put("systemname", systemName);
+            hashMap.put("SystemName", systemName);
 
             Set entrySet = hashMap.entrySet();
             for (Object o : entrySet) {
@@ -159,7 +161,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         ArrayList<ReportItem> itemsList = new ArrayList<>();
 
-        String selectQuery = "SELECT * FROM Meldungen WHERE systemname = '"+SystemName +"'";
+        String selectQuery = "SELECT * FROM Meldungen WHERE SystemName = '"+SystemName +"'";
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -276,4 +278,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
        return mcursor.getInt(0);
    }
+
+    void setMeasuring(String systemName, HashMap<JSONObject, ArrayList> data) {
+        Log.i(TAG, "setMeasuring" );
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        ArrayList<HashMap> measuring = (ArrayList<HashMap>) data.get("measuring");
+
+        assert measuring != null;
+        for(HashMap hashMap : measuring) {
+            hashMap.put("SystemName", systemName);
+
+            Set entrySet = hashMap.entrySet();
+            for (Object o : entrySet) {
+                Map.Entry me = (Map.Entry) o;
+                values.put((String) me.getKey(), Objects.requireNonNull(me.getValue().toString()));
+            }
+            db.insert("Measuring", null, values);
+        }
+        db.close();
+    }
 }
