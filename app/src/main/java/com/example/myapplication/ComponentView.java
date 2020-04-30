@@ -1,10 +1,12 @@
 package com.example.myapplication;
 
-import android.os.Bundle;
-
+import androidx.annotation.LongDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.icu.util.Calendar;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,51 +15,28 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.functions.FirebaseFunctions;
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ComponentView#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ComponentView extends Fragment {
     private FirebaseFunctions mFunctions;
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private LineGraphSeries<DataPoint> series;
+    private GraphView graphView;
 
     public ComponentView() {
-        // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ComponentView.
-     */
-    // TODO: Rename and change types and number of parameters
     private static ComponentView newInstance(String param1, String param2) {
         ComponentView fragment = new ComponentView();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -66,15 +45,20 @@ public class ComponentView extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mFunctions = FirebaseFunctions.getInstance();
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_component_view, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        graphView = view.findViewById(R.id.graph);
 
         String systemName = null;
 
@@ -83,20 +67,15 @@ public class ComponentView extends Fragment {
             systemName = bundle.getString("SystemName");
         }
 
-        getData(systemName);
+        DatabaseHelper db = new DatabaseHelper(getActivity());
+        HashMap listMeasuring = db.getMeasuring(systemName);
 
-/*        DatabaseHelper db = new DatabaseHelper(getActivity());
-        ArrayList<ReportItem> listReport = db.getAllMessages(systemName);
-
-        if(listReport != null && listReport.size() > 0) {
-            databaseToUI(listReport);
+        if(listMeasuring != null && listMeasuring.size() > 0) {
+            showMeasuring(listMeasuring);
         }
         else {
-
-        }*/
-
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_component_view, container, false);
+            getData(systemName);
+        }
     }
 
     private void getData(String sysName) {
@@ -133,14 +112,24 @@ public class ComponentView extends Fragment {
     private void safeData(String systemName, HashMap data) {
         DatabaseHelper db = new DatabaseHelper(getActivity());
         db.setMeasuring(systemName, data);
+        //showMeasuring(data);
     }
 
-/*    private void showData(HashMap<JSONObject, ArrayList> data){
+    private void showMeasuring(HashMap<Long, Double> listMeasuring) {
         try {
-            ArrayList jarray = data.get("measuring");
-            Log.d("TAG", "showData: "+ jarray.get(0));
-        } catch (Exception e) {
-            e.printStackTrace();
+            series = new LineGraphSeries<>();
+            List<Long> keys = new ArrayList<>(listMeasuring.keySet());
+            Collections.sort(keys);
+
+            for(Long key : keys) {
+                double measuring = listMeasuring.get(key);
+                series.appendData(new DataPoint(new Date(key), measuring), true, 15);
+            }
+
+            graphView.addSeries(series);
+
+        }catch (Exception e){
+            Log.d("Error", "showMeasuring" + e);
         }
-    }*/
+    }
 }

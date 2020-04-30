@@ -5,15 +5,18 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.icu.text.SimpleDateFormat;
+import android.text.format.Time;
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -193,7 +196,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     void addMasterData(ArrayList<HashMap> data_) {
         Log.i(TAG, "addMasterData" );
 
-
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
@@ -298,5 +300,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.insert("Measuring", null, values);
         }
         db.close();
+    }
+
+    HashMap getMeasuring(String systemName) {
+        Log.i(TAG, "getMeasuring");
+
+        String selectQuery = "SELECT timestamp_device, messwert  FROM Measuring WHERE SystemName = '"+systemName+"'" ;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        assert cursor != null;
+        HashMap<Long, Double> mapData = new HashMap<>();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        try {
+        if (cursor.moveToFirst()) {
+            do {
+                int index = cursor.getColumnIndex("timestamp_device");
+                Long time = sdf.parse(cursor.getString(index)).getTime();
+
+                index = cursor.getColumnIndex("messwert");
+                double messwert = Double.parseDouble(cursor.getString(index));
+
+                mapData.put(time, messwert);
+
+            } while (cursor.moveToNext());
+        }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        db.close();
+        return mapData;
     }
 }
