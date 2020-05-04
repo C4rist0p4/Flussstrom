@@ -1,11 +1,10 @@
 package com.example.myapplication;
 
-import androidx.annotation.LongDef;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,9 +18,9 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -115,17 +114,16 @@ public class ComponentView extends Fragment {
         //showMeasuring(data);
     }
 
-    private void showMeasuring(HashMap<Long, Double> listMeasuring) {
+    private void showMeasuring(HashMap<LocalTime, Double> listMeasuring) {
         try {
             series = new LineGraphSeries<>();
-            List<Long> keys = new ArrayList<>(listMeasuring.keySet());
+            List<LocalTime> keys = new ArrayList<>(listMeasuring.keySet());
             Collections.sort(keys);
 
-            for(Long key : keys) {
+            for(LocalTime key : keys) {
                 double measuring = listMeasuring.get(key);
-                series.appendData(new DataPoint(new Date(key), measuring), true, 15);
+                series.appendData(new DataPoint(key.getMinute(), measuring), true, 15);
             }
-
             graphView.addSeries(series);
 
         }catch (Exception e){

@@ -5,17 +5,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.icu.text.SimpleDateFormat;
-import android.text.format.Time;
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
+import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -310,14 +307,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(selectQuery, null);
 
         assert cursor != null;
-        HashMap<Long, Double> mapData = new HashMap<>();
+        HashMap<LocalTime, Double> mapData = new HashMap<>();
 
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-        try {
         if (cursor.moveToFirst()) {
             do {
                 int index = cursor.getColumnIndex("timestamp_device");
-                Long time = sdf.parse(cursor.getString(index)).getTime();
+                LocalTime time = LocalTime.parse(cursor.getString(index));
 
                 index = cursor.getColumnIndex("messwert");
                 double messwert = Double.parseDouble(cursor.getString(index));
@@ -325,9 +320,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 mapData.put(time, messwert);
 
             } while (cursor.moveToNext());
-        }
-        } catch (ParseException e) {
-            e.printStackTrace();
         }
         db.close();
         return mapData;
