@@ -53,7 +53,7 @@ public class MachineryActivity extends AppCompatActivity {
         ViewPagerAdapter viewPagerAdaper = new ViewPagerAdapter(getSupportFragmentManager(), 0);
         viewPagerAdaper.addFragment(assetMasterData, "Anlagenstammdaten");
         viewPagerAdaper.addFragment(systematicView, "Systematische Ansicht");
-        viewPagerAdaper.addFragment(componentView, "Komponentenbasierte Ansicht");
+        viewPagerAdaper.addFragment(componentView, "Komponentenbasierte");
         viewPagerAdaper.addFragment(report, "Meldung");
         viewPagerAdaper.addFragment(pictures, "Bilder");
         viewPagerAdaper.addFragment(control, "Steuerung");

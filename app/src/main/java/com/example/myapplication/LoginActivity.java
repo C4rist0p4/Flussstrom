@@ -55,6 +55,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+
     public void signInWithEmailAndPassword(View view) {
          email = emailET.getText().toString();
          password = passwordET.getText().toString();
@@ -72,6 +73,7 @@ public class LoginActivity extends AppCompatActivity {
             callHttpCloudFunction("checkUsers", data);
         }
     }
+
 
     private void authenticationWithFirebase() {
         mAuth.signInWithEmailAndPassword(email, password)
@@ -122,6 +124,7 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
+
     private void setTokensToMariaDB(String n) {
         FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnCompleteListener(task1 -> {
@@ -139,6 +142,7 @@ public class LoginActivity extends AppCompatActivity {
                     callHttpCloudFunction("setIdDevice", data);
                 });
     }
+
 
     private void callHttpCloudFunction(String funcName, HashMap data) {
         callCloudFunction(funcName, data)

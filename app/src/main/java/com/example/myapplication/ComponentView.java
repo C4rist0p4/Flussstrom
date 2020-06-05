@@ -3,8 +3,10 @@ package com.example.myapplication;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -53,6 +55,7 @@ public class ComponentView extends Fragment {
         return inflater.inflate(R.layout.fragment_component_view, container, false);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -83,7 +86,7 @@ public class ComponentView extends Fragment {
                     if (!task.isSuccessful()) {
                         Exception e = task.getException();
                         Log.w("TAG", "getMeasuring:onFailure", e);
-                        Toast.makeText(Objects.requireNonNull(getActivity()).getApplicationContext(), "An error occurred."
+                        Toast.makeText(requireActivity().getApplicationContext(), "An error occurred."
                                 , Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -114,6 +117,7 @@ public class ComponentView extends Fragment {
         //showMeasuring(data);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void showMeasuring(HashMap<LocalTime, Double> listMeasuring) {
         try {
             series = new LineGraphSeries<>();

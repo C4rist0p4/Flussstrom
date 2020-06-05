@@ -32,42 +32,42 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="@string/drehzahl"
-                android:textColor="#4D4D4D" />
+                android:textColor="@color/textGray" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="@string/frequenz"
-                android:textColor="#4D4D4D" />
+                android:textColor="@color/textGray" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="@string/leistung"
-                android:textColor="#4D4D4D" />
+                android:textColor="@color/textGray" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="@string/spannung"
-                android:textColor="#4D4D4D" />
+                android:textColor="@color/textGray" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="@string/stroeme"
-                android:textColor="#4D4D4D" />
+                android:textColor="@color/textGray" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="@string/temperatur"
-                android:textColor="#4D4D4D" />
+                android:textColor="@color/textGray" />
 
         </TableLayout>
     </androidx.cardview.widget.CardView>

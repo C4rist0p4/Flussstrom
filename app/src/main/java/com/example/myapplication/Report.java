@@ -82,7 +82,7 @@ public class Report extends Fragment {
                     if (!task.isSuccessful()) {
                         Exception e = task.getException();
                         Log.w("TAG", "addMessage:onFailure", e);
-                        Toast.makeText(Objects.requireNonNull(getActivity()).getApplicationContext(), "An error occurred."
+                        Toast.makeText(requireActivity().getApplicationContext(), "An error occurred."
                                 , Toast.LENGTH_SHORT).show();
                         return;
                     }

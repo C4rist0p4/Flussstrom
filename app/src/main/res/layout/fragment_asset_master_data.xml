@@ -27,7 +27,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/anlagenname"
-                android:textColor="#4D4D4D"
+                android:textColor="@color/textGray"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="32dp"
                 android:layout_marginTop="16dp"
-                android:textColor="#4D4D4D"
+                android:textColor="@color/textGray"
                 app:layout_constraintStart_toEndOf="@+id/systemname_text"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -48,7 +48,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/inbetriebnahme"
-                android:textColor="#4D4D4D"
+                android:textColor="@color/textGray"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/systemname_text" />
 
@@ -58,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="32dp"
                 android:layout_marginTop="16dp"
-                android:textColor="#4D4D4D"
+                android:textColor="@color/textGray"
                 app:layout_constraintStart_toEndOf="@+id/installation_text"
                 app:layout_constraintTop_toBottomOf="@+id/systemname" />
 
@@ -70,7 +70,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/installationsort"
-                android:textColor="#4D4D4D"
+                android:textColor="@color/textGray"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/installation_text" />
 
@@ -80,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="32dp"
                 android:layout_marginTop="16dp"
-                android:textColor="#4D4D4D"
+                android:textColor="@color/textGray"
                 app:layout_constraintStart_toEndOf="@+id/installationLocation_text"
                 app:layout_constraintTop_toBottomOf="@+id/installation" />
 
@@ -91,7 +91,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/seriennummer"
-                android:textColor="#4D4D4D"
+                android:textColor="@color/textGray"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/installationLocation_text" />
 
@@ -101,7 +101,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="32dp"
                 android:layout_marginTop="16dp"
-                android:textColor="#4D4D4D"
+                android:textColor="@color/textGray"
                 app:layout_constraintStart_toEndOf="@+id/serialNumber_text"
                 app:layout_constraintTop_toBottomOf="@+id/installationLocation" />
 
@@ -113,7 +113,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/leistung"
-                android:textColor="#4D4D4D"
+                android:textColor="@color/textGray"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/serialNumber_text" />
 
@@ -123,7 +123,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="32dp"
                 android:layout_marginTop="16dp"
-                android:textColor="#4D4D4D"
+                android:textColor="@color/textGray"
                 app:layout_constraintStart_toEndOf="@+id/power_text"
                 app:layout_constraintTop_toBottomOf="@+id/serialNumber" />
 
@@ -134,7 +134,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/anschlusswerte"
-                android:textColor="#4D4D4D"
+                android:textColor="@color/textGray"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/power_text" />
 
@@ -144,7 +144,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="32dp"
                 android:layout_marginTop="16dp"
-                android:textColor="#4D4D4D"
+                android:textColor="@color/textGray"
                 app:layout_constraintStart_toEndOf="@+id/connectedValues_text"
                 app:layout_constraintTop_toBottomOf="@+id/power" />
 
@@ -155,7 +155,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/datenanschluss"
-                android:textColor="#4D4D4D"
+                android:textColor="@color/textGray"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/connectedValues_text" />
 
@@ -165,7 +165,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="32dp"
                 android:layout_marginTop="16dp"
-                android:textColor="#4D4D4D"
+                android:textColor="@color/textGray"
                 app:layout_constraintStart_toEndOf="@+id/dataConnection_text"
                 app:layout_constraintTop_toBottomOf="@+id/connectedValues" />
 
@@ -176,7 +176,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/tiefgang"
-                android:textColor="#4D4D4D"
+                android:textColor="@color/textGray"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/dataConnection_text" />
 
@@ -186,7 +186,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="32dp"
                 android:layout_marginTop="16dp"
-                android:textColor="#4D4D4D"
+                android:textColor="@color/textGray"
                 app:layout_constraintStart_toEndOf="@+id/draft_text"
                 app:layout_constraintTop_toBottomOf="@+id/dataConnection" />
 
@@ -198,7 +198,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/datenblatt"
-                android:textColor="#4D4D4D"
+                android:textColor="@color/textGray"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/draft_text" />
 
@@ -209,7 +209,7 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginLeft="32dp"
                 android:layout_marginTop="16dp"
-                android:textColor="#4D4D4D"
+                android:textColor="@color/textGray"
                 app:layout_constraintStart_toEndOf="@+id/dataSheet_text"
                 app:layout_constraintTop_toBottomOf="@+id/draft" />
 
@@ -221,7 +221,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/bemerkung"
-                android:textColor="#4D4D4D"
+                android:textColor="@color/textGray"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/dataSheet_text" />
 
@@ -232,7 +232,7 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginLeft="32dp"
                 android:layout_marginTop="16dp"
-                android:textColor="#4D4D4D"
+                android:textColor="@color/textGray"
                 app:layout_constraintStart_toEndOf="@+id/comment_text"
                 app:layout_constraintTop_toBottomOf="@+id/dataSheet" />
         </androidx.constraintlayout.widget.ConstraintLayout>

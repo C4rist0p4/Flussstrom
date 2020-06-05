@@ -5,7 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -299,6 +302,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     HashMap getMeasuring(String systemName) {
         Log.i(TAG, "getMeasuring");
 

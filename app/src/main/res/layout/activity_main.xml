@@ -58,7 +58,7 @@
                 android:layout_marginTop="10dp"
                 android:text="@string/Leistung_24h"
                 android:textSize="16dp"
-                android:textColor="#4D4D4D" />
+                android:textColor="@color/textGray" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -66,7 +66,7 @@
                 android:layout_marginTop="10dp"
                 android:text="@string/Leistung_Durchschnitt"
                 android:textSize="16dp"
-                android:textColor="#4D4D4D" />
+                android:textColor="@color/textGray" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -74,7 +74,7 @@
                 android:layout_marginTop="10dp"
                 android:text="@string/Prozent_vom_Durchschnitt"
                 android:textSize="16dp"
-                android:textColor="#4D4D4D" />
+                android:textColor="@color/textGray" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
     <androidx.recyclerview.widget.RecyclerView
