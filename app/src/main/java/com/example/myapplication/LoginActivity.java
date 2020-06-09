@@ -15,8 +15,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
@@ -152,21 +156,21 @@ public class LoginActivity extends AppCompatActivity {
                         Log.w("HttpFailure", "Failure on "+ funcName , e);
                         return;
                     }
+
                     HashMap result = task.getResult();
                     assert result != null;
-
-                    if (Objects.equals(result.get("message"), "true")) {
-                        authenticationWithFirebase();
-                    } else if(Objects.equals(result.get("message"), "Id Device set")) {
-                        Log.i("Device", "Id set");
-                        getUserData(name);
-                    } else if(Objects.equals(result.get("message"), "Userdata")) {
-                        Log.i("Userdate", "receive Userdata");
-                        safeUserID(result);
-                    } else {
-                        Toast.makeText(LoginActivity.this, "Authentication failed " + result,
-                                Toast.LENGTH_SHORT).show();
-                    }
+                        if (Objects.equals(result.get("message"), "true")) {
+                            authenticationWithFirebase();
+                        } else if(Objects.equals(result.get("message"), "Id Device set")) {
+                            Log.i("Device", "Id set");
+                            getUserData(name);
+                        } else if(Objects.equals(result.get("message"), "Userdata")) {
+                            Log.i("Userdate", "receive Userdata");
+                            safeUserID(result);
+                        } else {
+                            Toast.makeText(LoginActivity.this, "Authentication failed " + result,
+                                    Toast.LENGTH_SHORT).show();
+                        }
                 });
     }
 

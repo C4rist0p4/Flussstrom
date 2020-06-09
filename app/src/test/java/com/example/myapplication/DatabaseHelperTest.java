@@ -1,8 +1,12 @@
 package com.example.myapplication;
 
 import android.os.Build;
-
 import androidx.test.core.app.ApplicationProvider;
+
+
+import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
+
 
 import org.junit.Before;
 import org.junit.Test;
@@ -12,8 +16,15 @@ import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.BufferedReader;
+
+import java.io.InputStream;
+
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+
 
 
 @RunWith(RobolectricTestRunner.class)
@@ -69,5 +80,36 @@ public class DatabaseHelperTest {
         db.setMessages(systemName , data);
 
         assertEquals(db.getAllMessages("1").get(0).getBemerkungMel(), "Schaltschranktuer wurde geoeffnet!!!");
+    }
+
+    @Test
+    public void SystemDetails()  {
+        InputStream in = this.getClass().getClassLoader().getResourceAsStream("SystemDetails.json");
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+
+        Gson gson = new Gson();
+        ArrayList sysDatails = gson.fromJson(bufferedReader, ArrayList.class);
+
+        HashMap hmap = new HashMap<String, Object>();
+
+        LinkedTreeMap<String, Object> ltm = (LinkedTreeMap) sysDatails.get(0);
+        for (Object key : ltm.keySet()) {
+            if (key.equals("fk_anlagentyp")) {
+                HashMap h= new HashMap<String, Object>();
+                h.put("leistung", 2);
+                hmap.put(key, h);
+            } else {
+                hmap.put(key, ltm.get(key));
+            }
+        }
+
+        ArrayList<HashMap> al = new ArrayList();
+        al.add(hmap);
+
+        db.setSystemDetails(al);
+
+       HashMap getHmap = db.getSystemDetails("Neugattersleben");
+
+        assertEquals(getHmap.get("installationsort"), "Neugattersleben");
     }
 }

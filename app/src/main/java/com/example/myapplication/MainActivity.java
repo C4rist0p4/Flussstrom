@@ -179,8 +179,8 @@ public class MainActivity extends AppCompatActivity implements SystemAdapter.OnS
 
     }
 
-    private void safeData(ArrayList machinery) {
+    public void safeData(ArrayList machinery) {
         DatabaseHelper db = new DatabaseHelper(this);
-        db.addMasterData(machinery);
+        db.setSystemDetails(machinery);
     }
 }

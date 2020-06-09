@@ -1,0 +1,23 @@
+idAnlagen:1
+fk_betreiber:2
+fk_hersteller:9
+fk_adresse:1
+installationsort:Neugattersleben
+inbetriebnahme:2018-04-05
+anlagenname:Neugattersleben
+seriennummer:001
+bemerkung:Wachstumskern Flussstrom Plus
+aktiviert:1
+kennung:a462c8c6c0186b09
+ipaddress:10.8.0.3
+tcpTriggerPort:2410
+emailenabled:0
+fk_anlagentyp:test
+leistung:2
+anschlusswerte:2 kW
+datenanschluss:LTE
+tiefgang:1
+datenblatt: /doc/first/Lorem ipsum.pdf
+handbuch:null
+bemerkungtyp:null
+bezeichnung:0

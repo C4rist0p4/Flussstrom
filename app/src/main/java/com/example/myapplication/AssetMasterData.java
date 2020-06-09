@@ -1,22 +1,37 @@
 package com.example.myapplication;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.pdf.PdfRenderer;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
+import android.os.ParcelFileDescriptor;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.Task;
+import com.github.barteksc.pdfviewer.PDFView;
 import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 
 public class AssetMasterData extends Fragment {
@@ -31,6 +46,7 @@ public class AssetMasterData extends Fragment {
     private TextView draft;
     private TextView dataSheet;
     private TextView comment;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -80,6 +96,46 @@ public class AssetMasterData extends Fragment {
         connectedValues.append(Objects.requireNonNull(data.get("anschlusswerte")).toString());
         dataConnection.append(Objects.requireNonNull(data.get("datenanschluss")).toString());
         draft.append(Objects.requireNonNull(data.get("tiefgang")).toString());
+
         dataSheet.append(Objects.requireNonNull(data.get("datenblatt")).toString());
+
+        String text = data.get("datenblatt").toString();
+
+        SpannableString spannableString = new SpannableString(text);
+
+        ClickableSpan clickableSpan = new ClickableSpan() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void onClick(@NonNull View widget) {
+
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+                StorageReference gsReference = storage.getReferenceFromUrl("gs://projekt-f-545a1.appspot.com/PDF/Lorem ipsum.pdf");
+
+                try {
+                    File localFile = File.createTempFile("datenblatt", ".pdf");
+
+                    File finalLocalFile = localFile;
+                    gsReference.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
+
+                        Intent intent = new Intent(requireActivity().getApplicationContext(), PDF_View.class);
+
+                        String path = finalLocalFile.getPath();
+                        intent.putExtra("path", path);
+                        startActivity(intent);
+
+                }).addOnFailureListener(exception -> {
+                    Toast.makeText(requireActivity().getApplicationContext(), "Download Fail", Toast.LENGTH_LONG).show();
+                });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        spannableString.setSpan(clickableSpan, 0, text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        dataSheet.setText(spannableString);
+        dataSheet.setMovementMethod(LinkMovementMethod.getInstance());
     }
+
 }

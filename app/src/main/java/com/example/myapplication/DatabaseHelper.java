@@ -193,7 +193,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }*/
 
-    void addMasterData(ArrayList<HashMap> data_) {
+    void setSystemDetails(ArrayList<HashMap> data_) {
         Log.i(TAG, "addMasterData" );
 
         SQLiteDatabase db = this.getWritableDatabase();

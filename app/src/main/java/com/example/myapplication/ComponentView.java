@@ -80,6 +80,7 @@ public class ComponentView extends Fragment {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void getData(String sysName) {
         addMessage(sysName)
                 .addOnCompleteListener(task -> {
@@ -93,7 +94,6 @@ public class ComponentView extends Fragment {
                     HashMap result = task.getResult();
                     assert result != null;
                     safeData(sysName ,result);
-                    //safeData(result);
                 });
     }
 
@@ -111,10 +111,13 @@ public class ComponentView extends Fragment {
                 .call(data)
                 .continueWith(task -> (HashMap) Objects.requireNonNull(task.getResult()).getData());
     }
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void safeData(String systemName, HashMap data) {
         DatabaseHelper db = new DatabaseHelper(getActivity());
         db.setMeasuring(systemName, data);
-        //showMeasuring(data);
+
+        HashMap listMeasuring = db.getMeasuring(systemName);
+        showMeasuring(listMeasuring);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
