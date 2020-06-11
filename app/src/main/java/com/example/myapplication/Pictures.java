@@ -1,5 +1,7 @@
 package com.example.myapplication;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,58 +9,55 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.File;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link Pictures#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class Pictures extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public Pictures() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Pictures.
-     */
-    // TODO: Rename and change types and number of parameters
-    private static Pictures newInstance(String param1, String param2) {
-        Pictures fragment = new Pictures();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    ImageView image;
+    TextView date;
+    TextView time;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_pictures, container, false);
+
+        View view = inflater.inflate(R.layout.fragment_pictures, container, false);
+
+        image = (ImageView) view.findViewById(R.id.imageView);
+        date = (TextView) view.findViewById(R.id.dateTV);
+        time = (TextView) view.findViewById(R.id.timeTV);
+
+        DownloadTask downloadTask = new DownloadTask(requireActivity().getApplicationContext(), new OnEventListener<String>() {
+
+            @Override
+            public void onSuccess(String[] object) {
+
+                File imgFile = new File(object[0]);
+                Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+
+                date.setText(object[1]);
+                time.setText(object[2]);
+                image.setImageBitmap(myBitmap);
+
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(requireActivity().getApplicationContext(), "Download Fail", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        downloadTask.execute();
+
+        return view;
     }
 }

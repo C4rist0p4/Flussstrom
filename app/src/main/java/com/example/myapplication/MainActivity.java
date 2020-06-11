@@ -8,23 +8,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import androidx.annotation.LongDef;
-import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.functions.FirebaseFunctions;
-import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.iid.FirebaseInstanceId;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -152,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements SystemAdapter.OnS
                                 , Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    ArrayList result = task.getResult();
+                    ArrayList<HashMap> result = (ArrayList<HashMap>) task.getResult();
                     assert result != null;
 
                     showSystemsFromCall(result);
@@ -160,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements SystemAdapter.OnS
                 });
     }
 
-    private Task<ArrayList> addMessage(List<String> systemId) {
+    private Task<ArrayList<HashMap>> addMessage(List<String> systemId) {
 
         HashMap<String, Object> data = new HashMap<>();
         ArrayList<HashMap<String, String>> idList = new ArrayList<>();
@@ -175,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements SystemAdapter.OnS
         return mFunctions
                 .getHttpsCallable("getMachinery")
                 .call(data)
-                .continueWith(task -> (ArrayList) Objects.requireNonNull(task.getResult()).getData());
+                .continueWith(task -> (ArrayList<HashMap>) Objects.requireNonNull(task.getResult()).getData());
 
     }
 

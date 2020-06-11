@@ -1,5 +1,10 @@
 apply plugin: 'com.android.application'
 
+
+def apikeyPropertiesFile = rootProject.file("/apikey.properties")
+def apikeyProperties = new Properties()
+apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
@@ -11,6 +16,10 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "username", apikeyProperties['username'])
+        buildConfigField("String", "password", apikeyProperties['password'])
+        buildConfigField("String", "address", apikeyProperties['address'])
+        buildConfigField("String", "path", apikeyProperties['path'])
     }
 
     buildTypes {
@@ -58,6 +67,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.google.firebase:firebase-storage:19.1.1'
     implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
+    implementation 'commons-net:commons-net:3.6'
 }
 
 apply plugin: 'com.google.gms.google-services'
