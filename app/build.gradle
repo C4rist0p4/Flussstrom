@@ -20,6 +20,8 @@ android {
         buildConfigField("String", "password", apikeyProperties['password'])
         buildConfigField("String", "address", apikeyProperties['address'])
         buildConfigField("String", "path", apikeyProperties['path'])
+        buildConfigField("String", "ipAdresseEthernetrelais", apikeyProperties['ipAdresseEthernetrelais'])
+        buildConfigField("String", "httpPort", apikeyProperties['httpPort'])
     }
 
     buildTypes {

@@ -18,8 +18,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
-import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -29,7 +27,6 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class AssetMasterData extends Fragment {
-    private FirebaseFunctions mFunctions;
     private TextView systemname;
     private TextView installationLocation;
     private TextView installation;
@@ -45,7 +42,6 @@ public class AssetMasterData extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mFunctions = FirebaseFunctions.getInstance();
     }
 
     @Override

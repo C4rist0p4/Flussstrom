@@ -35,7 +35,7 @@ public class ComponentView extends Fragment {
     public ComponentView() {
     }
 
-    private static ComponentView newInstance(String param1, String param2) {
+    private static ComponentView newInstance() {
         ComponentView fragment = new ComponentView();
         Bundle args = new Bundle();
         fragment.setArguments(args);

@@ -4,44 +4,41 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.ProgressBar;
+import android.widget.Switch;
+import android.widget.Toast;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link Control#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class Control extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    String ipAdresse = BuildConfig.ipAdresseEthernetrelais;
+    String httpPort = BuildConfig.httpPort;
+    Switch relay7;
+    Switch relay8;
+    ProgressBar progressBar;
 
-    public Control() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Control.
-     */
-    // TODO: Rename and change types and number of parameters
-    private static Control newInstance(String param1, String param2) {
+    private static Control newInstance() {
         Control fragment = new Control();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+
+
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -49,16 +46,110 @@ public class Control extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_control, container, false);
+        View view = inflater.inflate(R.layout.fragment_control, container, false);
+
+        relay7 = view.findViewById(R.id.switch1);
+        relay8 = view.findViewById(R.id.switch2);
+        progressBar = view.findViewById(R.id.progressBar);
+
+        HttpTask httpTask = new HttpTask(requireActivity().getApplicationContext(), progressBar, new OnEventListener<String>() {
+            @Override
+            public void onSuccess(String[] object) {
+
+                try {
+                    XmlPullParserFactory parserFactory = XmlPullParserFactory.newInstance();
+                    XmlPullParser parser = parserFactory.newPullParser();
+                    parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+                    InputStream stream = new ByteArrayInputStream(object[0].getBytes(StandardCharsets.UTF_8));
+
+                    parser.setInput(stream, null);
+
+                    ArrayList<String> relays = processParsing(parser);
+
+                    if (relays.get(0).equals("ON")) {
+                        relay7.setChecked(true);
+                    } else {
+                        relay7.setChecked(false);
+                    }
+
+                    if (relays.get(1).equals("ON")) {
+                        relay8.setChecked(true);
+                    } else {
+                        relay8.setChecked(false);
+                    }
+                    setListener();
+
+                } catch (XmlPullParserException | IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(requireActivity().getApplicationContext(), "Connection Fail", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        httpTask.execute("http://" + ipAdresse + ":" + httpPort + "/status.xml");
+
+        return view;
+    }
+
+    private void setListener () {
+        relay7.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked){
+                sendCommand("http://" + ipAdresse + ":" + httpPort + "/status.xml?r7=1");
+            }else {
+                sendCommand("http://" + ipAdresse + ":" + httpPort + "/status.xml?r7=0");
+            }
+        });
+
+        relay8.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked){
+                sendCommand("http://" + ipAdresse + ":" + httpPort + "/status.xml?r8=1");
+            }else {
+                sendCommand("http://" + ipAdresse + ":" + httpPort + "/status.xml?r8=0");
+            }
+        });
+    }
+
+    private void sendCommand(String URL) {
+        HttpTask httpTask = new HttpTask(requireActivity().getApplicationContext(), progressBar, new OnEventListener<String>() {
+
+            @Override
+            public void onSuccess(String[] object) {
+                Toast.makeText(requireActivity().getApplicationContext(), "Command Send", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(requireActivity().getApplicationContext(), "Connection Fail", Toast.LENGTH_LONG).show();
+            }
+        });
+        httpTask.execute(URL);
+    }
+
+    private ArrayList<String> processParsing(XmlPullParser parser) throws IOException, XmlPullParserException {
+
+        ArrayList<String> relays = new  ArrayList<>();
+
+        int eventType = parser.getEventType();
+        while (eventType != XmlPullParser.END_DOCUMENT) {
+            String relayName;
+
+            relayName = parser.getName();
+
+            if ("Relay7".equals(relayName) || "Relay8".equals(relayName)) {
+                relays.add(parser.nextText());
+            }
+
+            eventType = parser.next();
+        }
+        return relays;
     }
 }

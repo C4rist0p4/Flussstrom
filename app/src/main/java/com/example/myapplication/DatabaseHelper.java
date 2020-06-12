@@ -184,15 +184,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return itemsList;
     }
 
-/*    public void deleteMessages(Messages messages) {
-        Log.i(TAG, "deleteMessages");
-
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete("Meldungen, messages_ID = ?",
-                new String[] { String.valueOf(messages.getId()) });
-        db.close();
-    }*/
-
     void setSystemDetails(ArrayList<HashMap> data_) {
         Log.i(TAG, "addMasterData" );
 
