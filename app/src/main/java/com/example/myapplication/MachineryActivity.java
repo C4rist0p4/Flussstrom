@@ -49,6 +49,7 @@ public class MachineryActivity extends AppCompatActivity {
         assetMasterData.setArguments(bundle);
         report.setArguments(bundle);
         componentView.setArguments(bundle);
+        pictures.setArguments(bundle);
 
         ViewPagerAdapter viewPagerAdaper = new ViewPagerAdapter(getSupportFragmentManager(), 0);
         viewPagerAdaper.addFragment(assetMasterData, "Anlagenstammdaten");

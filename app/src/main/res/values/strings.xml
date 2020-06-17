@@ -67,5 +67,6 @@
     <string name="generated_power24">Leistung 24</string>
     <string name="performance_average">Leistung	Durchschnitt</string>
     <string name="percent_of_the_average">Prozent vom Durchschnitt</string>
+    <string name="E_Mail">E Mail</string>
 
 </resources>

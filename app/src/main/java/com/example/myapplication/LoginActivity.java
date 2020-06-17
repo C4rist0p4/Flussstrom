@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +35,7 @@ public class LoginActivity extends AppCompatActivity {
     private String password;
 
     private DatabaseHelper db;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +46,7 @@ public class LoginActivity extends AppCompatActivity {
         nameET = findViewById(R.id.nameET);
         emailET = findViewById(R.id.emailET);
         passwordET = findViewById(R.id.password1ET);
+        progressBar = findViewById(R.id.progressBar);
     }
 
     public void onStart() {
@@ -69,6 +73,9 @@ public class LoginActivity extends AppCompatActivity {
             HashMap<String, Object> data = new HashMap<>();
             data.put("name", name);
             data.put("password", password);
+            progressBar.setVisibility(View.VISIBLE);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
 
             callHttpCloudFunction("checkUsers", data);
         }
@@ -92,6 +99,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void startMainActvity() {
+        progressBar.setVisibility(View.GONE);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
@@ -117,6 +126,8 @@ public class LoginActivity extends AppCompatActivity {
                         Log.i("success", "createUserWithEmail success");
                         setTokensToMariaDB(name);
                     } else {
+                        progressBar.setVisibility(View.GONE);
+                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                         Log.w("failure", "createUserWithEmail failure", task.getException());
                         Toast.makeText(LoginActivity.this, "Create User failed.",
                                 Toast.LENGTH_SHORT).show();
@@ -129,6 +140,8 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnCompleteListener(task1 -> {
                     if (!task1.isSuccessful()) {
+                        progressBar.setVisibility(View.GONE);
+                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                         Log.w("TAG", "getInstanceId failed", task1.getException());
                         return;
                     }
@@ -164,6 +177,8 @@ public class LoginActivity extends AppCompatActivity {
                             Log.i("Userdate", "receive Userdata");
                             safeUserID(result);
                         } else {
+                            progressBar.setVisibility(View.GONE);
+                            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                             Toast.makeText(LoginActivity.this, "Authentication failed " + result,
                                     Toast.LENGTH_SHORT).show();
                         }

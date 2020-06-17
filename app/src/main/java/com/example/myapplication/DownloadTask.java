@@ -24,7 +24,7 @@ class DownloadTask extends AsyncTask<String, Void, String[]> {
     private String username = BuildConfig.username;
     private String password = BuildConfig.password;
     private String address = BuildConfig.address;
-    private String path = BuildConfig.path;
+
     private OnEventListener<String> mCallBack;
     public Exception mException;
     private WeakReference<Context> contextRef;
@@ -45,11 +45,12 @@ class DownloadTask extends AsyncTask<String, Void, String[]> {
             client.enterLocalPassiveMode();
             client.login(username, password);
 
-            client.changeWorkingDirectory(path);
+            String[] splitPath = params[0].split("/");
 
-            FTPFile[] files = client.listFiles();
-            FTPFile file = files[files.length-1];
-            String fliename = file.getName();
+            client.changeWorkingDirectory(splitPath[3]);
+
+            FTPFile file = client.mdtmFile(splitPath[4]);
+            String fliename = splitPath[4];
             Calendar calendar = file.getTimestamp();
             client.setFileType(FTP.BINARY_FILE_TYPE);
 

@@ -44,7 +44,6 @@ public class Report extends Fragment {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             systemName = bundle.getString("SystemName");
