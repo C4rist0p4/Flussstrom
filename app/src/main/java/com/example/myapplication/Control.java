@@ -37,8 +37,6 @@ public class Control extends Fragment {
         Control fragment = new Control();
         Bundle args = new Bundle();
 
-
-
         fragment.setArguments(args);
         return fragment;
     }

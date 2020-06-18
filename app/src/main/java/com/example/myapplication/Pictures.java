@@ -13,9 +13,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.myapplication.pictureDownload.PictureDowload;
+import com.example.myapplication.pictureDownload.TaskRunner;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.functions.FirebaseFunctions;
 
@@ -30,11 +33,13 @@ public class Pictures extends Fragment {
     TextView time;
     String systemName = null;
     FirebaseFunctions mFunctions;
+    ProgressBar progressBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mFunctions = FirebaseFunctions.getInstance();
+
     }
 
     @Override
@@ -46,6 +51,7 @@ public class Pictures extends Fragment {
         image = (ImageView) view.findViewById(R.id.imageView);
         date = (TextView) view.findViewById(R.id.dateTV);
         time = (TextView) view.findViewById(R.id.timeTV);
+        progressBar = view.findViewById(R.id.progressBar);
 
         return view;
     }
@@ -56,16 +62,18 @@ public class Pictures extends Fragment {
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             systemName = bundle.getString("SystemName");
+            progressBar.setVisibility(View.VISIBLE);
             getPicture(systemName);
         }
     }
 
     private void getPicture(String sysname) {
-        addMessage(sysname)
+        getPictue(sysname)
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful()) {
                         Exception e = task.getException();
                         Log.w("TAG", "addMessage:onFailure", e);
+                        progressBar.setVisibility(View.GONE);
                         Toast.makeText(requireActivity().getApplicationContext(), "An error occurred."
                                 , Toast.LENGTH_SHORT).show();
                         return;
@@ -76,7 +84,7 @@ public class Pictures extends Fragment {
                 });
     }
 
-    private Task<HashMap> addMessage(String sysname) {
+    private Task<HashMap> getPictue(String sysname) {
         DatabaseHelper db = new DatabaseHelper(getActivity());
 
         HashMap systemDetails = db.getSystemDetails(sysname);
@@ -93,18 +101,16 @@ public class Pictures extends Fragment {
 
 
     private void DownloadPicture(String path) {
-        DownloadTask downloadTask = new DownloadTask(requireActivity().getApplicationContext(), new OnEventListener<String>() {
+        PictureDowload pictureDowload = new PictureDowload(requireActivity().getApplicationContext(), path, progressBar, new OnEventListener<String>() {
 
             @Override
             public void onSuccess(String[] object) {
-
                 File imgFile = new File(object[0]);
                 Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
 
                 date.setText(object[1]);
                 time.setText(object[2]);
                 image.setImageBitmap(myBitmap);
-
             }
 
             @Override
@@ -113,6 +119,7 @@ public class Pictures extends Fragment {
             }
         });
 
-       downloadTask.execute(path);
+        TaskRunner runner = new TaskRunner();
+        runner.executeAsync(pictureDowload);
     }
 }

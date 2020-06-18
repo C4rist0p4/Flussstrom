@@ -11,6 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.myapplication.pictureDownload.LoadingDialog;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -35,7 +36,7 @@ public class LoginActivity extends AppCompatActivity {
     private String password;
 
     private DatabaseHelper db;
-    private ProgressBar progressBar;
+    private LoadingDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +47,8 @@ public class LoginActivity extends AppCompatActivity {
         nameET = findViewById(R.id.nameET);
         emailET = findViewById(R.id.emailET);
         passwordET = findViewById(R.id.password1ET);
-        progressBar = findViewById(R.id.progressBar);
+
+        loadingDialog = new LoadingDialog(LoginActivity.this);
     }
 
     public void onStart() {
@@ -58,7 +60,6 @@ public class LoginActivity extends AppCompatActivity {
             startMainActvity();
         }
     }
-
 
     public void signInWithEmailAndPassword(View view) {
          email = emailET.getText().toString();
@@ -73,14 +74,11 @@ public class LoginActivity extends AppCompatActivity {
             HashMap<String, Object> data = new HashMap<>();
             data.put("name", name);
             data.put("password", password);
-            progressBar.setVisibility(View.VISIBLE);
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+            loadingDialog.startLoadingDialog();
 
             callHttpCloudFunction("checkUsers", data);
         }
     }
-
 
     private void authenticationWithFirebase() {
         mAuth.signInWithEmailAndPassword(email, password)
@@ -99,8 +97,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void startMainActvity() {
-        progressBar.setVisibility(View.GONE);
-        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
@@ -126,8 +122,7 @@ public class LoginActivity extends AppCompatActivity {
                         Log.i("success", "createUserWithEmail success");
                         setTokensToMariaDB(name);
                     } else {
-                        progressBar.setVisibility(View.GONE);
-                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                        loadingDialog.dismissDialog();
                         Log.w("failure", "createUserWithEmail failure", task.getException());
                         Toast.makeText(LoginActivity.this, "Create User failed.",
                                 Toast.LENGTH_SHORT).show();
@@ -135,12 +130,11 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-
     private void setTokensToMariaDB(String n) {
         FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnCompleteListener(task1 -> {
                     if (!task1.isSuccessful()) {
-                        progressBar.setVisibility(View.GONE);
+                        loadingDialog.dismissDialog();
                         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                         Log.w("TAG", "getInstanceId failed", task1.getException());
                         return;
@@ -155,7 +149,6 @@ public class LoginActivity extends AppCompatActivity {
                     callHttpCloudFunction("setIdDevice", data);
                 });
     }
-
 
     private void callHttpCloudFunction(String funcName, HashMap data) {
         callCloudFunction(funcName, data)
@@ -177,7 +170,7 @@ public class LoginActivity extends AppCompatActivity {
                             Log.i("Userdate", "receive Userdata");
                             safeUserID(result);
                         } else {
-                            progressBar.setVisibility(View.GONE);
+                            loadingDialog.dismissDialog();
                             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                             Toast.makeText(LoginActivity.this, "Authentication failed " + result,
                                     Toast.LENGTH_SHORT).show();
