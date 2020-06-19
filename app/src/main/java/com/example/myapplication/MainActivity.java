@@ -6,6 +6,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
@@ -13,6 +15,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myapplication.system.SystemAdapter;
+import com.example.myapplication.system.SystemItem;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.functions.FirebaseFunctions;
@@ -31,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements SystemAdapter.OnS
     private FirebaseFunctions mFunctions;
     ArrayList<SystemItem> listSystem;
     DatabaseHelper db;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements SystemAdapter.OnS
         mFunctions = FirebaseFunctions.getInstance();
 
         recyclerView = findViewById(R.id.recycler_view);
+        progressBar = findViewById(R.id.progressBar);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -50,7 +56,8 @@ public class MainActivity extends AppCompatActivity implements SystemAdapter.OnS
         db = new DatabaseHelper(this);
 
         if(db.countSystemes() == 0){
-             getSystem();
+            progressBar.setVisibility(View.VISIBLE);
+            getSystem();
         }
         else {
             listSystem = db.getSystemItem();
@@ -81,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements SystemAdapter.OnS
             systemList.add(systemItem);
             listSystem = systemList;
         }
-
+        progressBar.setVisibility(View.GONE);
         SystemAdapter systemAdapter = new SystemAdapter(this, listSystem, this);
         recyclerView.setAdapter(systemAdapter);
     }
@@ -140,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements SystemAdapter.OnS
                     if (!task.isSuccessful()) {
                         Exception e = task.getException();
                         Log.w("TAG", "addMessage:onFailure", e);
+                        progressBar.setVisibility(View.GONE);
                         Toast.makeText(Objects.requireNonNull(this).getApplicationContext(), "An error occurred."
                                 , Toast.LENGTH_SHORT).show();
                         return;

@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.assetMasterData;
 
 import android.content.Intent;
 import android.os.Build;
@@ -18,6 +18,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.myapplication.DatabaseHelper;
+import com.example.myapplication.R;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -88,7 +90,6 @@ public class AssetMasterData extends Fragment {
         draft.append(Objects.requireNonNull(data.get("tiefgang")).toString());
 
         dataSheet.append(Objects.requireNonNull(data.get("datenblatt")).toString());
-
         String text = Objects.requireNonNull(data.get("datenblatt")).toString();
 
         SpannableString spannableString = new SpannableString(text);

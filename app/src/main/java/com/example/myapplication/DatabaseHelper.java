@@ -10,6 +10,9 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.myapplication.report.ReportItem;
+import com.example.myapplication.system.SystemItem;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,7 +31,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "Flusstrom";
 
-    DatabaseHelper(Context context)  {
+    public DatabaseHelper(Context context)  {
         super(context, DATABASE_NAME, null, DATABASE_VERSION );
     }
 
@@ -115,7 +118,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    List<String> getSystemId() {
+    public List<String> getSystemId() {
         Log.i(TAG, "getSystemId" );
 
         String selectQuery = "SELECT * FROM SystemId";
@@ -137,7 +140,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return SystemId;
     }
 
-    void setMessages(String systemName, HashMap data) {
+    public void setMessages(String systemName, HashMap data) {
         Log.i(TAG, "setMessages");
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -159,7 +162,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    ArrayList<ReportItem> getAllMessages(String SystemName) {
+    public ArrayList<ReportItem> getAllMessages(String SystemName) {
         Log.i(TAG, "getAllMessages" );
 
         ArrayList<ReportItem> itemsList = new ArrayList<>();
@@ -184,7 +187,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return itemsList;
     }
 
-    void setSystemDetails(ArrayList<HashMap> data_) {
+    public void setSystemDetails(ArrayList<HashMap> data_) {
         Log.i(TAG, "addMasterData" );
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -216,7 +219,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    HashMap getSystemDetails(String name) {
+    public HashMap getSystemDetails(String name) {
        Log.i(TAG, "getSystemDetails" );
 
        String selectQuery = "SELECT * FROM Anlagen WHERE anlagenname = '"+name+"'" ;
@@ -240,7 +243,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
        return temp;
    }
 
-    ArrayList<SystemItem> getSystemItem() {
+    public ArrayList<SystemItem> getSystemItem() {
        Log.i(TAG, "getSystemItem" );
 
        ArrayList<SystemItem> systemList = new ArrayList<>();
@@ -261,7 +264,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return systemList;
    }
 
-   int countSystemes() {
+   public int countSystemes() {
        SQLiteDatabase db = this.getWritableDatabase();
        String count = "SELECT count(*) FROM Anlagen";
 

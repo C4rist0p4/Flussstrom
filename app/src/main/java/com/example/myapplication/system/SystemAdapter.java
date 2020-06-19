@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.system;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,6 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myapplication.R;
+
 import java.util.ArrayList;
 
 public class SystemAdapter extends RecyclerView.Adapter<SystemAdapter.SystemViewHolder>  {
@@ -16,7 +18,7 @@ public class SystemAdapter extends RecyclerView.Adapter<SystemAdapter.SystemView
     private ArrayList<SystemItem> systemList;
     private OnSystemListener onSystemListener;
 
-    SystemAdapter(Context mContext, ArrayList<SystemItem> list, OnSystemListener onSystemListener_) {
+    public SystemAdapter(Context mContext, ArrayList<SystemItem> list, OnSystemListener onSystemListener_) {
         context = mContext;
         systemList = list;
         this.onSystemListener = onSystemListener_;

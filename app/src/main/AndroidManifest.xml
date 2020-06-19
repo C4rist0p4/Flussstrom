@@ -10,7 +10,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".PDF_View"></activity>
+        <activity android:name=".assetMasterData.PDF_View"/>
         <activity android:name=".MachineryActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".CreateUser" />

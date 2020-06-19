@@ -1,6 +1,5 @@
 package com.example.myapplication;
 
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -12,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.Task;
@@ -31,6 +31,7 @@ public class ComponentView extends Fragment {
     private FirebaseFunctions mFunctions;
     private LineGraphSeries<DataPoint> series;
     private GraphView graphView;
+    ProgressBar progressBar;
 
     public ComponentView() {
     }
@@ -61,6 +62,7 @@ public class ComponentView extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         graphView = view.findViewById(R.id.graph);
+        progressBar = view.findViewById(R.id.progressBar);
 
         String systemName = null;
 
@@ -76,6 +78,7 @@ public class ComponentView extends Fragment {
             showMeasuring(listMeasuring);
         }
         else {
+            progressBar.setVisibility(View.VISIBLE);
             getData(systemName);
         }
     }
@@ -85,6 +88,7 @@ public class ComponentView extends Fragment {
         addMessage(sysName)
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful()) {
+                        progressBar.setVisibility(View.GONE);
                         Exception e = task.getException();
                         Log.w("TAG", "getMeasuring:onFailure", e);
                         Toast.makeText(requireActivity().getApplicationContext(), "An error occurred."
@@ -131,9 +135,11 @@ public class ComponentView extends Fragment {
                 double measuring = listMeasuring.get(key);
                 series.appendData(new DataPoint(key.getMinute(), measuring), true, 15);
             }
+            progressBar.setVisibility(View.GONE);
             graphView.addSeries(series);
 
         }catch (Exception e){
+            progressBar.setVisibility(View.GONE);
             Log.d("Error", "showMeasuring" + e);
         }
     }

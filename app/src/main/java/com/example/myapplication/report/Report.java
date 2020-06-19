@@ -1,16 +1,24 @@
-package com.example.myapplication;
+package com.example.myapplication.report;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.core.view.GestureDetectorCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myapplication.DatabaseHelper;
+import com.example.myapplication.R;
+import com.example.myapplication.swipeGesture.SwipeActions;
+import com.example.myapplication.swipeGesture.SwipeGestureDetector;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.functions.FirebaseFunctions;
 
@@ -26,12 +34,23 @@ public class Report extends Fragment {
     private ReportAdapter reportAdapter;
     private ArrayList<ReportItem> arrayList;
     private String systemName = null;
+    ProgressBar progressBar;
+    private SwipeGestureDetector swipeGestureDetector;
+    private GestureDetectorCompat gestureDetectorCompat;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mFunctions = FirebaseFunctions.getInstance();
         arrayList =  new ArrayList<>();
+
+        swipeGestureDetector=new SwipeGestureDetector(() -> {
+            progressBar.setVisibility(View.VISIBLE);
+            recyclerView.clearAnimation();
+            getData(systemName);
+        });
+
+        gestureDetectorCompat = new GestureDetectorCompat(requireActivity().getApplicationContext(), swipeGestureDetector);
     }
 
     @Override
@@ -40,6 +59,7 @@ public class Report extends Fragment {
         View view = inflater.inflate(R.layout.fragment_report, container, false);
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
+        progressBar = view.findViewById(R.id.progressBar);
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
@@ -47,24 +67,31 @@ public class Report extends Fragment {
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             systemName = bundle.getString("SystemName");
+
+            DatabaseHelper db = new DatabaseHelper(getActivity());
+            ArrayList<ReportItem> listReport = db.getAllMessages(systemName);
+
+            if(listReport != null && listReport.size() > 0) {
+                databaseToUI(listReport);
+            }
+            else {
+                progressBar.setVisibility(View.VISIBLE);
+                getData(systemName);
+            }
         }
 
-        DatabaseHelper db = new DatabaseHelper(getActivity());
-        ArrayList<ReportItem> listReport = db.getAllMessages(systemName);
-
-        if(listReport != null && listReport.size() > 0) {
-            databaseToUI(listReport);
-        }
-        else {
-            getData(systemName);
-        }
         return view;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void databaseToUI(ArrayList<ReportItem> listReport) {
         try {
             reportAdapter = new ReportAdapter(getActivity(), listReport);
             recyclerView.setAdapter(reportAdapter);
+            recyclerView.setOnTouchListener((v, event) -> {
+                gestureDetectorCompat.onTouchEvent(event);
+                return true;
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -79,6 +106,7 @@ public class Report extends Fragment {
         addMessage(sysname)
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful()) {
+                        progressBar.setVisibility(View.GONE);
                         Exception e = task.getException();
                         Log.w("TAG", "addMessage:onFailure", e);
                         Toast.makeText(requireActivity().getApplicationContext(), "An error occurred."
@@ -96,7 +124,7 @@ public class Report extends Fragment {
         DatabaseHelper db = new DatabaseHelper(getActivity());
 
         HashMap systemDetails = db.getSystemDetails(sysname);
-        String idAnlagen = systemDetails.get("idAnlagen").toString();
+        String idAnlagen = Objects.requireNonNull(systemDetails.get("idAnlagen")).toString();
 
         HashMap<String, Object> data = new HashMap<>();
         data.put("fk_anlagen", idAnlagen);
@@ -121,9 +149,11 @@ public class Report extends Fragment {
 
                 arrayList.add(new ReportItem(datum, fk_meldungstyp, bemerkungMel));
             }
+            progressBar.setVisibility(View.GONE);
             reportAdapter = new ReportAdapter(getActivity(), arrayList);
             recyclerView.setAdapter(reportAdapter);
         } catch (Exception e) {
+            progressBar.setVisibility(View.GONE);
             e.printStackTrace();
         }
     }

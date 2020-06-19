@@ -1,11 +1,11 @@
-package com.example.myapplication;
+package com.example.myapplication.report;
 
-class ReportItem {
+public class ReportItem {
     private String reportDate;
     private String meldungstyp;
     private String bemerkungMel;
 
-    ReportItem(){}
+    public ReportItem(){}
 
     ReportItem(String date, String meldung, String bemerkung) {
         reportDate = date;
@@ -15,15 +15,15 @@ class ReportItem {
 
     String getDate() { return reportDate; }
 
-    void setDate(String date) { this.reportDate = date; }
+    public void setDate(String date) { this.reportDate = date; }
 
     String getMeldungstyp() {
         return meldungstyp;
     }
 
-    void setMeldungstyp(String meldungstyp) { this.meldungstyp = meldungstyp; }
+    public void setMeldungstyp(String meldungstyp) { this.meldungstyp = meldungstyp; }
 
     String getBemerkungMel() { return bemerkungMel; }
 
-    void setBemerkungMel(String bemerkungMel) { this.bemerkungMel = bemerkungMel; }
+    public void setBemerkungMel(String bemerkungMel) { this.bemerkungMel = bemerkungMel; }
 }
