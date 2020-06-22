@@ -12,5 +12,5 @@
 /captures
 .externalNativeBuild
 .cxx
-apikey.properties
+app/apikey.properties
 /app/google-services.json

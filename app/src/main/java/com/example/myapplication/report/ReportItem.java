@@ -23,7 +23,7 @@ public class ReportItem {
 
     public void setMeldungstyp(String meldungstyp) { this.meldungstyp = meldungstyp; }
 
-    String getBemerkungMel() { return bemerkungMel; }
+    public String getBemerkungMel() { return bemerkungMel; }
 
     public void setBemerkungMel(String bemerkungMel) { this.bemerkungMel = bemerkungMel; }
 }
