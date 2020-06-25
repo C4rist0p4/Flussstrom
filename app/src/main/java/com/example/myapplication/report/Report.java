@@ -1,10 +1,8 @@
 package com.example.myapplication.report;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -12,17 +10,27 @@ import android.widget.Toast;
 
 import androidx.core.view.GestureDetectorCompat;
 import androidx.fragment.app.Fragment;
+
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.DatabaseHelper;
 import com.example.myapplication.R;
-import com.example.myapplication.swipeGesture.SwipeActions;
+import com.example.myapplication.database.entiy.Meldungen;
+
 import com.example.myapplication.swipeGesture.SwipeGestureDetector;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.functions.FirebaseFunctions;
+import com.google.gson.Gson;
 
-import java.util.ArrayList;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -31,75 +39,62 @@ import java.util.Objects;
 public class Report extends Fragment {
     private FirebaseFunctions mFunctions;
     private RecyclerView recyclerView;
-    private ReportAdapter reportAdapter;
-    private ArrayList<ReportItem> arrayList;
+
     private String systemName = null;
     ProgressBar progressBar;
     private SwipeGestureDetector swipeGestureDetector;
     private GestureDetectorCompat gestureDetectorCompat;
+    private ReportViewModel reportViewModel;
+    private Gson gson;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mFunctions = FirebaseFunctions.getInstance();
-        arrayList =  new ArrayList<>();
 
-        swipeGestureDetector=new SwipeGestureDetector(() -> {
+        swipeGestureDetector= new SwipeGestureDetector(() -> {
             progressBar.setVisibility(View.VISIBLE);
             recyclerView.clearAnimation();
             getData(systemName);
         });
 
-        gestureDetectorCompat = new GestureDetectorCompat(requireActivity().getApplicationContext(), swipeGestureDetector);
+        gestureDetectorCompat = new GestureDetectorCompat(getActivity(), swipeGestureDetector);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_report, container, false);
-        recyclerView = view.findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
+
         progressBar = view.findViewById(R.id.progressBar);
 
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
+        recyclerView = view.findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setHasFixedSize(true);
+
+        progressBar = view.findViewById(R.id.progressBar);
+        gson = new Gson();
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             systemName = bundle.getString("SystemName");
 
-            DatabaseHelper db = new DatabaseHelper(getActivity());
-            ArrayList<ReportItem> listReport = db.getAllMessages(systemName);
-
-            if(listReport != null && listReport.size() > 0) {
-                databaseToUI(listReport);
-            }
-            else {
-                progressBar.setVisibility(View.VISIBLE);
-                getData(systemName);
-            }
-        }
-
-        return view;
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private void databaseToUI(ArrayList<ReportItem> listReport) {
-        try {
-            reportAdapter = new ReportAdapter(getActivity(), listReport);
+            final ReportAdapter reportAdapter = new ReportAdapter();
             recyclerView.setAdapter(reportAdapter);
-            recyclerView.setOnTouchListener((v, event) -> {
-                gestureDetectorCompat.onTouchEvent(event);
-                return true;
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
-    private void safeData(HashMap data) {
-        DatabaseHelper db = new DatabaseHelper(getActivity());
-        db.setMessages(systemName, data);
+            reportViewModel = new ViewModelProvider(getActivity(), new ReportViewModelFactory(getActivity().getApplication(), systemName)).get(ReportViewModel.class);
+            reportViewModel.getAllbySystemName(systemName).observe(getActivity(), new Observer<List<Meldungen>>() {
+                @Override
+                public void onChanged(List<Meldungen> meldungen) {
+                    reportAdapter.setMeldungen(meldungen);
+
+                    if(meldungen.isEmpty()){
+                        progressBar.setVisibility(View.VISIBLE);
+                        getData(systemName);
+                    }
+                }
+            });
+        }
+        return view;
     }
 
     private void getData(String sysname) {
@@ -109,18 +104,17 @@ public class Report extends Fragment {
                         progressBar.setVisibility(View.GONE);
                         Exception e = task.getException();
                         Log.w("TAG", "addMessage:onFailure", e);
-                        Toast.makeText(requireActivity().getApplicationContext(), "An error occurred."
+                        Toast.makeText(getActivity(), "An error occurred."
                                 , Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    HashMap result = task.getResult();
+                    String result = task.getResult();
                     assert result != null;
-                    showData(result);
                     safeData(result);
                 });
     }
 
-    private Task<HashMap> addMessage(String sysname) {
+    private Task<String> addMessage(String sysname) {
         DatabaseHelper db = new DatabaseHelper(getActivity());
 
         HashMap systemDetails = db.getSystemDetails(sysname);
@@ -132,29 +126,33 @@ public class Report extends Fragment {
         return mFunctions
                 .getHttpsCallable("getMeldung")
                 .call(data)
-                .continueWith(task -> (HashMap) Objects.requireNonNull(task.getResult()).getData());
+                .continueWith(task -> {
+                    String result = gson.toJson(task.getResult().getData());
+                    return result;
+                });
     }
 
-    private void showData(HashMap<String, List> data){
+    private void safeData(String data) {
+
+        Meldungen[] meldungen = gson.fromJson(data, Meldungen[].class);
+
         try {
-            List<HashMap> listdata = data.get("allmeldungen");
+            JSONArray jArray = new JSONArray(data);
 
-            assert listdata != null;
-            for (int i = 0; i < listdata.size(); i++){
-                HashMap<String, String> meldungen = listdata.get(i);
+            for(int i = 0; i < meldungen.length; i++) {
 
-                String datum = meldungen.get("datum");
-                String bemerkungMel = meldungen.get("bemerkungMel");
-                String fk_meldungstyp = String.valueOf(meldungen.get("fk_meldungstyp"));
+                JSONObject jsonObject = jArray.getJSONObject(0);
+                JSONObject jArray2 = (JSONObject) jsonObject.get("fk_meldungstyp");
 
-                arrayList.add(new ReportItem(datum, fk_meldungstyp, bemerkungMel));
+                meldungen[i].setMeldungstyp(jArray2.getString("bemerkungMT"));
+                meldungen[i].setSystemName(systemName);
+
+                reportViewModel.insert(meldungen[i]);
             }
-            progressBar.setVisibility(View.GONE);
-            reportAdapter = new ReportAdapter(getActivity(), arrayList);
-            recyclerView.setAdapter(reportAdapter);
-        } catch (Exception e) {
-            progressBar.setVisibility(View.GONE);
+        } catch (JSONException e) {
+            progressBar.setVisibility(View.INVISIBLE);
             e.printStackTrace();
         }
+        progressBar.setVisibility(View.INVISIBLE);
     }
 }

@@ -63,15 +63,6 @@ public class MainActivity extends AppCompatActivity implements SystemAdapter.OnS
             listSystem = db.getSystemItem();
             showSystems(listSystem);
         }
-
-        /*
-        mAuth = FirebaseAuth.getInstance();
-
-        TextView flottilleTV = findViewById(R.id.flottilleTV);
-        flottilleTV.setOnClickListener(v -> {
-            FirebaseUser user = mAuth.getCurrentUser();
-            updateUI(user);
-        });*/
     }
 
     private void showSystems(ArrayList<SystemItem> listSystemes) {

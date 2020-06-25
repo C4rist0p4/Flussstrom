@@ -10,33 +10,30 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
-
+import com.example.myapplication.database.entiy.Meldungen;
 
 import java.util.ArrayList;
+import java.util.List;
+
 
 public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ReportViewHolder> {
-    private Context context;
-    private ArrayList<ReportItem> reportList;
-
-    ReportAdapter(Context mContext, ArrayList<ReportItem> list) {
-        context = mContext;
-        reportList = list;
-    }
+    private List<Meldungen> meldungen = new ArrayList<>();
 
     @NonNull
     @Override
     public ReportViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(context).inflate(R.layout.report_item, parent, false);
-        return new ReportViewHolder(v);
+        View itemView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.report_item, parent, false);
+        return new ReportViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ReportViewHolder holder, int position) {
-        ReportItem currentItem = reportList.get(position);
+        Meldungen currentItem = meldungen.get(position);
 
-        String bemerkungMel = currentItem.getBemerkungMel();
-        String date = currentItem.getDate();
         String meldungstyp = currentItem.getMeldungstyp();
+        String date = currentItem.getDatum() + " " + currentItem.getTimestamp_device();
+        String bemerkungMel = currentItem.getBemerkungMel();
 
         holder.meldungstypTV.setText(meldungstyp);
         holder.dateTV.setText(date);
@@ -45,8 +42,14 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ReportView
 
     @Override
     public int getItemCount() {
-        return reportList.size();
+        return meldungen.size();
     }
+
+    public void setMeldungen(List<Meldungen> meldungen) {
+        this.meldungen = meldungen;
+        notifyDataSetChanged();
+    }
+
 
     class ReportViewHolder extends RecyclerView.ViewHolder {
         private TextView meldungstypTV;

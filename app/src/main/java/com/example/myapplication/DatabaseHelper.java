@@ -40,7 +40,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.i(TAG, "onCreate");
 
         String user = ("CREATE TABLE IF NOT EXISTS Benutzer (User_id INTEGER PRIMARY KEY, idBenutzer TEXT)");
-        String messages = ("CREATE TABLE IF NOT EXISTS Meldungen (SystemName TEXT, datum TEXT, fk_meldungstyp TEXT, bemerkungMel TEXT, timestamp_device TEXT)");
+        //String messages = ("CREATE TABLE IF NOT EXISTS Meldungen (SystemName TEXT, datum TEXT, fk_meldungstyp TEXT, bemerkungMel TEXT, timestamp_device TEXT)");
         String masterData  = ("CREATE TABLE IF NOT EXISTS Anlagen (idAnlagen TEXT, fk_betreiber TEXT, fk_hersteller TEXT," +
                 "fk_adresse TEXT, installationsort TEXT, inbetriebnahme TEXT, anlagenname TEXT, seriennummer TEXT, bemerkung TEXT," +
                 "aktiviert TEXT, kennung TEXT, ipaddress TEXT, tcpTriggerPort TEXT, emailenabled TEXT, leistung TEXT," +
@@ -50,7 +50,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String measuring = ("CREATE TABLE IF NOT EXISTS  Measuring(Id INTEGER PRIMARY KEY, SystemName TEXT, datum DATE, timestamp_device TIME, messwert TEXT)");
         // Execute script.
         db.execSQL(user);
-        db.execSQL(messages);
+        //db.execSQL(messages);
         db.execSQL(masterData);
         db.execSQL(systemIdData);
         db.execSQL(measuring);
@@ -59,7 +59,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS Benutzer");
-        db.execSQL("DROP TABLE IF EXISTS Meldungen");
+        //db.execSQL("DROP TABLE IF EXISTS Meldungen");
         // Create tables again
         onCreate(db);
     }
@@ -138,53 +138,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         db.close();
         return SystemId;
-    }
-
-    public void setMessages(String systemName, HashMap data) {
-        Log.i(TAG, "setMessages");
-
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        ArrayList<HashMap> messages = (ArrayList<HashMap>) data.get("allmeldungen");
-
-        assert messages != null;
-        for(HashMap hashMap : messages) {
-            hashMap.remove("fk_anlagen");
-            hashMap.put("SystemName", systemName);
-
-            Set entrySet = hashMap.entrySet();
-            for (Object o : entrySet) {
-                Map.Entry me = (Map.Entry) o;
-                values.put((String) me.getKey(), Objects.requireNonNull(me.getValue().toString()));
-            }
-            db.insert("Meldungen", null, values);
-        }
-        db.close();
-    }
-
-    public ArrayList<ReportItem> getAllMessages(String SystemName) {
-        Log.i(TAG, "getAllMessages" );
-
-        ArrayList<ReportItem> itemsList = new ArrayList<>();
-
-        String selectQuery = "SELECT * FROM Meldungen WHERE SystemName = '"+SystemName +"'";
-
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-
-        // looping through all rows and adding to list
-        if (cursor.moveToFirst()) {
-            do {
-                ReportItem reportItem = new ReportItem();
-                reportItem.setDate(cursor.getString(1));
-                reportItem.setMeldungstyp(cursor.getString(2));
-                reportItem.setBemerkungMel(cursor.getString(3));
-
-                itemsList.add(reportItem);
-            } while (cursor.moveToNext());
-        }
-        db.close();
-        return itemsList;
     }
 
     public void setSystemDetails(ArrayList<HashMap> data_) {
