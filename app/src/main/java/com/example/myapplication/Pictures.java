@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.GestureDetectorCompat;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 
 import com.example.myapplication.pictureDownload.PictureDowload;
 import com.example.myapplication.pictureDownload.TaskRunner;
+import com.example.myapplication.swipeGesture.SwipeGestureDetector;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.functions.FirebaseFunctions;
 
@@ -34,11 +36,20 @@ public class Pictures extends Fragment {
     String systemName = null;
     FirebaseFunctions mFunctions;
     ProgressBar progressBar;
+    private SwipeGestureDetector swipeGestureDetector;
+    private GestureDetectorCompat gestureDetectorCompat;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mFunctions = FirebaseFunctions.getInstance();
+
+        swipeGestureDetector=new SwipeGestureDetector(() -> {
+            progressBar.setVisibility(View.VISIBLE);
+            getPicture(systemName);
+        });
+
+        gestureDetectorCompat = new GestureDetectorCompat(requireActivity().getApplicationContext(), swipeGestureDetector);
 
     }
 
@@ -52,6 +63,11 @@ public class Pictures extends Fragment {
         date = (TextView) view.findViewById(R.id.dateTV);
         time = (TextView) view.findViewById(R.id.timeTV);
         progressBar = view.findViewById(R.id.progressBar);
+
+        view.setOnTouchListener((v, event) -> {
+            gestureDetectorCompat.onTouchEvent(event);
+            return true;
+        });
 
         return view;
     }
