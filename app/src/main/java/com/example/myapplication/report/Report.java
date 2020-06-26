@@ -26,7 +26,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.gson.Gson;
 
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,12 +51,11 @@ public class Report extends Fragment {
         super.onCreate(savedInstanceState);
         mFunctions = FirebaseFunctions.getInstance();
 
-        swipeGestureDetector= new SwipeGestureDetector(() -> {
+        swipeGestureDetector = new SwipeGestureDetector(() -> {
             progressBar.setVisibility(View.VISIBLE);
             recyclerView.clearAnimation();
             getData(systemName);
         });
-
         gestureDetectorCompat = new GestureDetectorCompat(getActivity(), swipeGestureDetector);
     }
 
@@ -81,16 +79,13 @@ public class Report extends Fragment {
             final ReportAdapter reportAdapter = new ReportAdapter();
             recyclerView.setAdapter(reportAdapter);
 
-            reportViewModel = new ViewModelProvider(getActivity(), new ReportViewModelFactory(getActivity().getApplication(), systemName)).get(ReportViewModel.class);
-            reportViewModel.getAllbySystemName(systemName).observe(getActivity(), new Observer<List<Meldungen>>() {
-                @Override
-                public void onChanged(List<Meldungen> meldungen) {
-                    reportAdapter.setMeldungen(meldungen);
+            reportViewModel = new ViewModelProvider(requireActivity(), new ReportViewModelFactory(getActivity().getApplication(), systemName)).get(ReportViewModel.class);
+            reportViewModel.getAllbySystemName(systemName).observe(getActivity(), meldungen -> {
+                reportAdapter.setMeldungen(meldungen);
 
-                    if(meldungen.isEmpty()){
-                        progressBar.setVisibility(View.VISIBLE);
-                        getData(systemName);
-                    }
+                if(meldungen.isEmpty()){
+                    progressBar.setVisibility(View.VISIBLE);
+                    getData(systemName);
                 }
             });
         }
@@ -126,10 +121,7 @@ public class Report extends Fragment {
         return mFunctions
                 .getHttpsCallable("getMeldung")
                 .call(data)
-                .continueWith(task -> {
-                    String result = gson.toJson(task.getResult().getData());
-                    return result;
-                });
+                .continueWith(task -> gson.toJson(Objects.requireNonNull(task.getResult()).getData()));
     }
 
     private void safeData(String data) {
@@ -139,15 +131,15 @@ public class Report extends Fragment {
         try {
             JSONArray jArray = new JSONArray(data);
 
-            for(int i = 0; i < meldungen.length; i++) {
+            for (Meldungen value : meldungen) {
 
                 JSONObject jsonObject = jArray.getJSONObject(0);
                 JSONObject jArray2 = (JSONObject) jsonObject.get("fk_meldungstyp");
 
-                meldungen[i].setMeldungstyp(jArray2.getString("bemerkungMT"));
-                meldungen[i].setSystemName(systemName);
+                value.setMeldungstyp(jArray2.getString("bemerkungMT"));
+                value.setSystemName(systemName);
 
-                reportViewModel.insert(meldungen[i]);
+                reportViewModel.insert(value);
             }
         } catch (JSONException e) {
             progressBar.setVisibility(View.INVISIBLE);

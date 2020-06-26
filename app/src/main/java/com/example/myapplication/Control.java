@@ -89,7 +89,7 @@ public class Control extends Fragment {
             }
             @Override
             public void onFailure(Exception e) {
-                Toast.makeText(requireActivity().getApplicationContext(), "Connection Fail", Toast.LENGTH_LONG).show();
+                Toast.makeText(requireActivity().getApplicationContext(), "Connection to Controller Fail", Toast.LENGTH_LONG).show();
             }
         });
 
