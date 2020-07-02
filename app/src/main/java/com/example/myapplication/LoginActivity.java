@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.pictureDownload.LoadingDialog;
+import com.example.myapplication.util.EspressoIdlingResource;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -61,20 +62,22 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void signInWithEmailAndPassword(View view) {
-         email = emailET.getText().toString();
-         password = passwordET.getText().toString();
-         name = nameET.getText().toString();
+
+        email = emailET.getText().toString();
+        password = passwordET.getText().toString();
+        name = nameET.getText().toString();
 
         if (password.length() <= 5) {
             Toast.makeText(LoginActivity.this,
                     "Ihr Passwort muss mindestens 6 Zeichen lang sein.",
                     Toast.LENGTH_LONG).show();
         } else {
+            //Testing
+            EspressoIdlingResource.increment();
             HashMap<String, Object> data = new HashMap<>();
             data.put("name", name);
             data.put("password", password);
             loadingDialog.startLoadingDialog();
-
             callHttpCloudFunction("checkUsers", data);
         }
     }
@@ -196,7 +199,8 @@ public class LoginActivity extends AppCompatActivity {
         db = new DatabaseHelper(this);
         db.addUser(data);
         db.addSystemId(data);
-
+        //Testing
+        EspressoIdlingResource.decrement();
         startMainActvity();
     }
 }

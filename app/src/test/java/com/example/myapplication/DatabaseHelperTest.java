@@ -54,7 +54,7 @@ public class DatabaseHelperTest {
         assertEquals(db.getSystemId().get(0), "7");
     }
 
-    @Test
+/*    @Test
     public void Messages() {
         String systemName = "1";
         HashMap<String, ArrayList> data = new HashMap();
@@ -72,7 +72,7 @@ public class DatabaseHelperTest {
         db.setMessages(systemName , data);
 
         assertEquals(db.getAllMessages("1").get(0).getBemerkungMel(), "Schaltschranktuer wurde geoeffnet!!!");
-    }
+    }*/
 
     @Test
     public void SystemDetails()  {

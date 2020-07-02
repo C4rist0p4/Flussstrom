@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.system.SystemAdapter;
 import com.example.myapplication.system.SystemItem;
+import com.example.myapplication.util.EspressoIdlingResource;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.functions.FirebaseFunctions;
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements SystemAdapter.OnS
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -56,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements SystemAdapter.OnS
         db = new DatabaseHelper(this);
 
         if(db.countSystemes() == 0){
+            EspressoIdlingResource.increment();
             progressBar.setVisibility(View.VISIBLE);
             getSystem();
         }
@@ -63,11 +66,13 @@ public class MainActivity extends AppCompatActivity implements SystemAdapter.OnS
             listSystem = db.getSystemItem();
             showSystems(listSystem);
         }
+
     }
 
     private void showSystems(ArrayList<SystemItem> listSystemes) {
         SystemAdapter systemAdapter = new SystemAdapter(this, listSystemes, this);
         recyclerView.setAdapter(systemAdapter);
+
     }
 
     private void showSystemsFromCall(ArrayList<HashMap> mapSystem) {
@@ -81,7 +86,9 @@ public class MainActivity extends AppCompatActivity implements SystemAdapter.OnS
         }
         progressBar.setVisibility(View.GONE);
         SystemAdapter systemAdapter = new SystemAdapter(this, listSystem, this);
-        recyclerView.setAdapter(systemAdapter);
+
+
+        recyclerView.setAdapter(systemAdapter );
     }
 
     @Override

@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi;
 
 import com.example.myapplication.report.ReportItem;
 import com.example.myapplication.system.SystemItem;
+import com.example.myapplication.util.EspressoIdlingResource;
 
 import org.json.JSONArray;
 import org.json.JSONException;

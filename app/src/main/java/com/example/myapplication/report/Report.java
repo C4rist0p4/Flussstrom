@@ -11,7 +11,6 @@ import android.widget.Toast;
 import androidx.core.view.GestureDetectorCompat;
 import androidx.fragment.app.Fragment;
 
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -31,7 +30,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 
 

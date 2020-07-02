@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 
 def apikeyPropertiesFile = rootProject.file("apikey.properties")
@@ -22,6 +23,8 @@ android {
         buildConfigField("String", "path", apikeyProperties['path'])
         buildConfigField("String", "ipAdresseEthernetrelais", apikeyProperties['ipAdresseEthernetrelais'])
         buildConfigField("String", "httpPort", apikeyProperties['httpPort'])
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -51,8 +54,6 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui:2.2.2'
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'com.google.firebase:firebase-analytics:17.4.3'
     implementation 'com.google.firebase:firebase-auth:19.3.1'
     implementation 'com.google.firebase:firebase-functions:19.0.2'
@@ -60,16 +61,28 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation "androidx.cardview:cardview:1.0.0"
     implementation 'com.jjoe64:graphview:4.2.2'
-    testImplementation 'org.robolectric:robolectric:4.3.1'
-    testImplementation 'androidx.test:core:1.2.0'
     implementation 'androidx.room:room-runtime:2.2.5'
-    annotationProcessor 'androidx.room:room-compiler:2.2.5'
-    androidTestImplementation 'org.testng:testng:6.9.6'
-    testImplementation 'junit:junit:4.13'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.google.firebase:firebase-storage:19.1.1'
     implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
     implementation 'commons-net:commons-net:3.6'
+    testImplementation 'org.robolectric:robolectric:4.3.1'
+    testImplementation 'androidx.test:core:1.2.0'
+    testImplementation 'junit:junit:4.13'
+    androidTestImplementation 'androidx.test:runner:1.1.0'
+    androidTestImplementation 'androidx.test:rules:1.1.0'
+    androidTestImplementation 'org.testng:testng:6.9.6'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation 'androidx.test.espresso:espresso-idling-resource:3.2.0'
+    annotationProcessor 'androidx.room:room-compiler:2.2.5'
+    implementation 'com.android.support:multidex:1.0.3'
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
 apply plugin: 'com.google.gms.google-services'
+repositories {
+    mavenCentral()
+}
