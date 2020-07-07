@@ -6,26 +6,32 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.GestureDetectorCompat;
+
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.pictureDownload.PictureDowload;
 import com.example.myapplication.pictureDownload.TaskRunner;
 import com.example.myapplication.swipeGesture.SwipeGestureDetector;
+import com.example.myapplication.system.SystemItem;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.functions.FirebaseFunctions;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -36,8 +42,9 @@ public class Pictures extends Fragment {
     String systemName = null;
     FirebaseFunctions mFunctions;
     ProgressBar progressBar;
+    Spinner spinner;
     private SwipeGestureDetector swipeGestureDetector;
-    private GestureDetectorCompat gestureDetectorCompat;
+    //private GestureDetectorCompat gestureDetectorCompat;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,7 +56,7 @@ public class Pictures extends Fragment {
             getPicture(systemName);
         });
 
-        gestureDetectorCompat = new GestureDetectorCompat(requireActivity().getApplicationContext(), swipeGestureDetector);
+        //gestureDetectorCompat = new GestureDetectorCompat(requireActivity().getApplicationContext(), swipeGestureDetector);
 
     }
 
@@ -63,11 +70,11 @@ public class Pictures extends Fragment {
         date = (TextView) view.findViewById(R.id.dateTV);
         time = (TextView) view.findViewById(R.id.timeTV);
         progressBar = view.findViewById(R.id.progressBar);
-
-        view.setOnTouchListener((v, event) -> {
+        spinner = view.findViewById(R.id.spinner);
+/*        view.setOnTouchListener((v, event) -> {
             gestureDetectorCompat.onTouchEvent(event);
             return true;
-        });
+        });*/
 
         return view;
     }
@@ -94,13 +101,13 @@ public class Pictures extends Fragment {
                                 , Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    HashMap result = task.getResult();
+                    ArrayList<HashMap> result = (ArrayList<HashMap>) task.getResult();
                     assert result != null;
-                    DownloadPicture(result.get("pictureURL").toString());
+                    PictureToSpinner(result);
                 });
     }
 
-    private Task<HashMap> getPictue(String sysname) {
+    private Task<ArrayList<HashMap>> getPictue(String sysname) {
         DatabaseHelper db = new DatabaseHelper(getActivity());
 
         HashMap systemDetails = db.getSystemDetails(sysname);
@@ -112,13 +119,45 @@ public class Pictures extends Fragment {
         return mFunctions
                 .getHttpsCallable("getPictures")
                 .call(data)
-                .continueWith(task -> (HashMap) Objects.requireNonNull(task.getResult()).getData());
+                .continueWith(task -> (ArrayList<HashMap>) Objects.requireNonNull(task.getResult()).getData());
+    }
+
+
+
+    private void PictureToSpinner(ArrayList<HashMap> pictures) {
+        List<String> picturesURL = new ArrayList<>();
+
+        for (HashMap picture : pictures){
+            //home/wago/KameraElbeFlottille1/Flottille1_2020-03-30_10-54-20_THUMB.jpg
+            String url = Objects.requireNonNull(picture.get("datum")).toString();
+            picturesURL.add(url);
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireActivity().getApplicationContext(),
+                android.R.layout.simple_spinner_item, picturesURL);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                HashMap picture = pictures.get(position);
+                String url = (String) picture.get("url");
+
+
+                DownloadPicture(url);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
     }
 
 
     private void DownloadPicture(String path) {
-        PictureDowload pictureDowload = new PictureDowload(requireActivity().getApplicationContext(), path, progressBar, new OnEventListener<String>() {
 
+        PictureDowload pictureDowload = new PictureDowload(requireActivity().getApplicationContext(), path, progressBar, new OnEventListener<String>() {
             @Override
             public void onSuccess(String[] object) {
                 File imgFile = new File(object[0]);

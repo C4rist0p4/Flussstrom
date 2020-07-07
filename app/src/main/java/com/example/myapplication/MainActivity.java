@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements SystemAdapter.OnS
         db = new DatabaseHelper(this);
 
         if(db.countSystemes() == 0){
+            //Testing
             EspressoIdlingResource.increment();
             progressBar.setVisibility(View.VISIBLE);
             getSystem();
@@ -178,6 +179,8 @@ public class MainActivity extends AppCompatActivity implements SystemAdapter.OnS
     }
 
     public void safeData(ArrayList machinery) {
+        //Testing
+        EspressoIdlingResource.decrement();
         DatabaseHelper db = new DatabaseHelper(this);
         db.setSystemDetails(machinery);
     }
