@@ -24,7 +24,6 @@ import android.widget.Toast;
 import com.example.myapplication.pictureDownload.PictureDowload;
 import com.example.myapplication.pictureDownload.TaskRunner;
 import com.example.myapplication.swipeGesture.SwipeGestureDetector;
-import com.example.myapplication.system.SystemItem;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.functions.FirebaseFunctions;
 
@@ -44,7 +43,6 @@ public class Pictures extends Fragment {
     ProgressBar progressBar;
     Spinner spinner;
     private SwipeGestureDetector swipeGestureDetector;
-    //private GestureDetectorCompat gestureDetectorCompat;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,9 +53,6 @@ public class Pictures extends Fragment {
             progressBar.setVisibility(View.VISIBLE);
             getPicture(systemName);
         });
-
-        //gestureDetectorCompat = new GestureDetectorCompat(requireActivity().getApplicationContext(), swipeGestureDetector);
-
     }
 
     @Override
@@ -71,10 +66,6 @@ public class Pictures extends Fragment {
         time = (TextView) view.findViewById(R.id.timeTV);
         progressBar = view.findViewById(R.id.progressBar);
         spinner = view.findViewById(R.id.spinner);
-/*        view.setOnTouchListener((v, event) -> {
-            gestureDetectorCompat.onTouchEvent(event);
-            return true;
-        });*/
 
         return view;
     }
@@ -122,13 +113,11 @@ public class Pictures extends Fragment {
                 .continueWith(task -> (ArrayList<HashMap>) Objects.requireNonNull(task.getResult()).getData());
     }
 
-
-
     private void PictureToSpinner(ArrayList<HashMap> pictures) {
         List<String> picturesURL = new ArrayList<>();
 
         for (HashMap picture : pictures){
-            //home/wago/KameraElbeFlottille1/Flottille1_2020-03-30_10-54-20_THUMB.jpg
+
             String url = Objects.requireNonNull(picture.get("datum")).toString();
             picturesURL.add(url);
         }
@@ -153,7 +142,6 @@ public class Pictures extends Fragment {
             }
         });
     }
-
 
     private void DownloadPicture(String path) {
 

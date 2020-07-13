@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
+import android.icu.text.SimpleDateFormat;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.functions.FirebaseFunctions;
+import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
@@ -23,6 +25,7 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -32,6 +35,7 @@ public class ComponentView extends Fragment {
     private LineGraphSeries<DataPoint> series;
     private GraphView graphView;
     ProgressBar progressBar;
+    SimpleDateFormat df;
 
     public ComponentView() {
     }
@@ -73,6 +77,7 @@ public class ComponentView extends Fragment {
 
         DatabaseHelper db = new DatabaseHelper(getActivity());
         HashMap listMeasuring = db.getMeasuring(systemName);
+        df = new SimpleDateFormat("HH:mm");
 
         if(listMeasuring != null && listMeasuring.size() > 0) {
             showMeasuring(listMeasuring);
@@ -133,10 +138,24 @@ public class ComponentView extends Fragment {
 
             for(LocalTime key : keys) {
                 double measuring = listMeasuring.get(key);
-                series.appendData(new DataPoint(key.getMinute(), measuring), true, 15);
+
+                Date date = df.parse(String.valueOf(key));
+                series.appendData(new DataPoint(date.getTime(), measuring), true, 15);
             }
             progressBar.setVisibility(View.GONE);
+            graphView.getGridLabelRenderer().setNumHorizontalLabels(4);
             graphView.addSeries(series);
+
+            graphView.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter() {
+                @Override
+                public String formatLabel(double value, boolean isValueX) {
+                    if(isValueX) {
+                        return df.format(new Date((long)value));
+                    }else {
+                        return super.formatLabel(value, isValueX);
+                    }
+                }
+            });
 
         }catch (Exception e){
             progressBar.setVisibility(View.GONE);
